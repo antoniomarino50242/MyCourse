@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace MyCourse.Models.Entities
+namespace MyCourse.Models.Entities.Services.Infrastructure
 {
     public partial class MyCourseDbContext : DbContext
     {
