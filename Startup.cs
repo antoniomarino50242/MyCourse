@@ -31,8 +31,8 @@ namespace MyCourse
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            //services.AddTransient<ICourseService, AdoNetCourseService>();
-            services.AddTransient<ICourseService, EfCoreCourseService>();
+            services.AddTransient<ICourseService, AdoNetCourseService>();
+            //services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
             //registro dbcontext 
@@ -40,7 +40,7 @@ namespace MyCourse
             //services.AddDbContext<MyCourseDbContext>();
             services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => 
             {
-                string connetionString = Configuration.GetSection("ConnetionStrings").GetValue<String>("Default");
+                string connetionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
                 optionsBuilder.UseSqlite(connetionString);
             });
 

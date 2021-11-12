@@ -29,3 +29,5 @@
 /Users/antoniomarino/Progetti/MyCourse/obj/Debug/netcoreapp2.2/MyCourse.pdb
 /Users/antoniomarino/Progetti/MyCourse/obj/Debug/netcoreapp2.2/MyCourse.genruntimeconfig.cache
 /Users/antoniomarino/Progetti/MyCourse/obj/Debug/netcoreapp2.2/MyCourse.csproj.CopyComplete
+/Users/antoniomarino/Progetti/MyCourse/bin/Debug/netcoreapp2.2/appsettings.Development.json
+/Users/antoniomarino/Progetti/MyCourse/bin/Debug/netcoreapp2.2/appsettings.json
