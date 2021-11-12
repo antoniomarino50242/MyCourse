@@ -29,7 +29,15 @@ namespace MyCourse.Models.Services.Application
                     Author = course.Author,
                     Rating = course.Rating,
                     CurrentPrice = course.CurrentPrice,
-                    FullPrice = course.FullPrice
+                    FullPrice = course.FullPrice,
+                    Lessons = course.Lessons.Select(lesson => new LessonViewModel
+                    {
+                        Id = lesson.Id,
+                        Title = lesson.Title,
+                        Description = lesson.Description,
+                        Duration = lesson.Duration
+                    })
+                    .ToList()
                 })
                 //.FirstOrDefaultAsync(); //null se l'elenco è vuoto e non solleva mai un'eccezione
                 //.SingleOrDefaultAsync();//tollera il caso in cui l'elenco è vuoto e restituisce il default, oppure se l'elenco contiene piu di uno solleva un'eccezione
