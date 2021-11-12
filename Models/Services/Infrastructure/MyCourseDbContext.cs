@@ -99,8 +99,8 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
 
             modelBuilder.Entity<Lesson>(entity =>
             {
-                entity.HasOne(lesson => lesson.Course)
-                      .WithMany(course => course.Lessons);
+                /*entity.HasOne(lesson => lesson.Course)
+                      .WithMany(course => course.Lessons);*/
                 #region Mapping generato automaticamente dal tool di reverse engeniring
                 /*
                 entity.Property(e => e.Id).ValueGeneratedNever();
