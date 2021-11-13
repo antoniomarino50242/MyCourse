@@ -20,12 +20,13 @@ namespace MyCourse
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
+        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -35,13 +36,13 @@ namespace MyCourse
 
             services.AddMvc(options => {
                 var homeProfile = new CacheProfile();
-                homeProfile.Duration = Configuration.GetValue<int>("ReponseCache:Home:Duration");
-                homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCacheLocation:Home:Location");
+                //homeProfile.Duration = Configuration.GetValue<int>("ReponseCache:Home:Duration");
+                //homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCacheLocation:Home:Location");
                 //homeProfile.VaryByQueryKeys() = new string[] {"page"};
 
                 //In modo più succinto scritto come
-                //Configuration.Bind("ReponseCache:Home", homeProfile);
-                homeProfile.VaryByQueryKeys = Configuration.GetValue<string[]>("ReponseCache:Home:VaryByQueryKeys");
+                Configuration.Bind("ReponseCache:Home", homeProfile);
+                //homeProfile.VaryByQueryKeys = Configuration.GetValue<string[]>("ReponseCache:Home:VaryByQueryKeys");
                 options.CacheProfiles.Add("Home", homeProfile);
                 
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
