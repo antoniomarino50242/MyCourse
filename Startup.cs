@@ -34,6 +34,7 @@ namespace MyCourse
             services.AddTransient<ICourseService, AdoNetCourseService>();
             //services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+            services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
 
             //registro dbcontext 
             //services.AddScoped<MyCourseDbContext>();
@@ -47,6 +48,7 @@ namespace MyCourse
             //options
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
+            services.Configure<TimeOptions>(Configuration.GetSection("Time"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
