@@ -31,12 +31,17 @@ namespace MyCourse
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddResponseCaching();
+
             services.AddMvc(options => {
                 var homeProfile = new CacheProfile();
                 homeProfile.Duration = Configuration.GetValue<int>("ReponseCache:Home:Duration");
                 homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCacheLocation:Home:Location");
+                //homeProfile.VaryByQueryKeys() = new string[] {"page"};
+
                 //In modo più succinto scritto come
                 //Configuration.Bind("ReponseCache:Home", homeProfile);
+                homeProfile.VaryByQueryKeys = Configuration.GetValue<string[]>("ReponseCache:Home:VaryByQueryKeys");
                 options.CacheProfiles.Add("Home", homeProfile);
                 
             }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -80,6 +85,8 @@ namespace MyCourse
             }
             app.UseStaticFiles();
             
+            app.UseResponseCaching();
+
             //app.UseMvcWithDefaultRoute();
             app.UseMvc(routeBuilder => 
             {
