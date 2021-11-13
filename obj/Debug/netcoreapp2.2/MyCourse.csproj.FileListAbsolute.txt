@@ -31,3 +31,5 @@
 /Users/antoniomarino/Progetti/MyCourse/obj/Debug/netcoreapp2.2/MyCourse.csproj.CopyComplete
 /Users/antoniomarino/Progetti/MyCourse/bin/Debug/netcoreapp2.2/appsettings.Development.json
 /Users/antoniomarino/Progetti/MyCourse/bin/Debug/netcoreapp2.2/appsettings.json
+/Users/antoniomarino/Progetti/MyCourse/obj/Debug/netcoreapp2.2/Razor/Views/Error/Index.cshtml.g.cs
+/Users/antoniomarino/Progetti/MyCourse/obj/Debug/netcoreapp2.2/Razor/Views/Error/CourseNotFound.cshtml.g.cs

@@ -1872,6 +1872,11 @@
   "RootNamespace": "MyCourse",
   "Documents": [
     {
+      "FilePath": "/Users/antoniomarino/Progetti/MyCourse/Views/Error/CourseNotFound.cshtml",
+      "TargetPath": "Views\\Error\\CourseNotFound.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "/Users/antoniomarino/Progetti/MyCourse/Views/Home/Index.cshtml",
       "TargetPath": "Views\\Home\\Index.cshtml",
       "FileKind": "mvc"
@@ -1879,6 +1884,11 @@
     {
       "FilePath": "/Users/antoniomarino/Progetti/MyCourse/Views/_ViewImports.cshtml",
       "TargetPath": "Views\\_ViewImports.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "/Users/antoniomarino/Progetti/MyCourse/Views/Error/Index.cshtml",
+      "TargetPath": "Views\\Error\\Index.cshtml",
       "FileKind": "mvc"
     },
     {
