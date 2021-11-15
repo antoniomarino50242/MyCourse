@@ -20,7 +20,6 @@ namespace MyCourse
 {
     public class Startup
     {
-        
 
         public Startup(IConfiguration configuration)
         {

@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MyCourse.Models.Entities.Services.Infrastructure;
+using MyCourse.Models.Exceptions;
+using MyCourse.Models.Options;
 using MyCourse.Models.ViewModels;
 
 namespace MyCourse.Models.Services.Application
@@ -10,9 +14,13 @@ namespace MyCourse.Models.Services.Application
     public class EfCoreCourseService : ICourseService
     {
         private readonly MyCourseDbContext dbContext;
+        private readonly ILogger<EfCoreCourseService> logger;
+        private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
 
-        public EfCoreCourseService(MyCourseDbContext dbContext)
+        public EfCoreCourseService(MyCourseDbContext dbContext, ILogger<EfCoreCourseService> logger, IOptionsMonitor<CoursesOptions> coursesOptions)
         {
+            this.coursesOptions = coursesOptions;
+            this.logger = logger;
             this.dbContext = dbContext;
         }
 
@@ -28,17 +36,24 @@ namespace MyCourse.Models.Services.Application
             //.SingleOrDefaultAsync();//tollera il caso in cui l'elenco è vuoto e restituisce il default, oppure se l'elenco contiene piu di uno solleva un'eccezione
             //.FirstAsync();//restituisc eil ptimo ma se l'elenco è vuoto solleva un eccezione 
             //.SingleAsync(); //restituisce il primo elemento se l'elenco ne contiene o 0 o più di uno solleva un'eccezione
-            CourseDetailViewModel viewModel = await queryLinq.SingleAsync();
+            CourseDetailViewModel viewModel = await queryLinq.FirstOrDefaultAsync();
+            if (viewModel == null)
+            {
+                logger.LogWarning("Course {id} not found", id);
+                throw new CourseNotFoundException(id);
+            }
             return viewModel;
         }
 
-        public async Task<List<CourseViewModel>> GetCoursesAsync()
+        public async Task<List<CourseViewModel>> GetCoursesAsync(string search)
         {
+            search = search ?? "";
             IQueryable<CourseViewModel> queryLinq = dbContext.Courses
+                .Where(course => course.Title.Contains(search))
                 .AsNoTracking()
                 .Select(course => CourseViewModel.FromEntity(course));
 
-            List<CourseViewModel> courses= await queryLinq.ToListAsync();
+            List<CourseViewModel> courses = await queryLinq.ToListAsync();
             return courses;
         }
     }
