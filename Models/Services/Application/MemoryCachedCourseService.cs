@@ -32,13 +32,13 @@ namespace MyCourse.Models.Services.Application
             });
         }
 
-        public Task<List<CourseViewModel>> GetCoursesAsync(string search, int page)
+        public Task<List<CourseViewModel>> GetCoursesAsync(string search, int page, string orderBy, bool ascending)
         {
-            return memoryCache.GetOrCreateAsync($"Courses{search}-{page}", cacheEntry =>
+            return memoryCache.GetOrCreateAsync($"Courses{search}-{page}-{orderBy}-{ascending}", cacheEntry =>
             {
                 cacheEntry.SetSize(1);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(timeOptions.CurrentValue.Default));
-                return courseService.GetCoursesAsync(search, page);
+                return courseService.GetCoursesAsync(search, page, orderBy, ascending);
             });
         }
     }

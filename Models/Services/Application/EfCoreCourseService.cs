@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Entities;
 using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Options;
@@ -46,13 +47,50 @@ namespace MyCourse.Models.Services.Application
             return viewModel;
         }
 
-        public async Task<List<CourseViewModel>> GetCoursesAsync(string search, int page)
+        public async Task<List<CourseViewModel>> GetCoursesAsync(string search, int page, string orderBy, bool ascending)
         {
             page = Math.Max(1, page);
             int limit = coursesOptions.CurrentValue.PerPage;
             int offset = (page - 1) * limit;
             search = search ?? "";
-            IQueryable<CourseViewModel> queryLinq = dbContext.Courses
+            var orderOptions = coursesOptions.CurrentValue.Order;
+            if (!orderOptions.Allow.Contains(orderBy))
+            {
+                orderBy = orderOptions.By;
+                ascending = orderOptions.Ascending;
+            }
+            IQueryable<Course> baseQuery = dbContext.Courses;
+            switch (orderBy){
+                case "Title": 
+                    if (ascending)
+                    {
+                        baseQuery = baseQuery.OrderBy(course => course.Title);
+                    } else
+                    {
+                        baseQuery = baseQuery.OrderByDescending(course => course.Title);
+                    }
+                break;
+                case "Rating" : 
+                    if (ascending)
+                    {
+                        baseQuery = baseQuery.OrderBy(course => course.Rating);
+                    } else
+                    {
+                        baseQuery = baseQuery.OrderByDescending(course => course.Rating);
+                    }
+                break;
+                case "CurrentPrice" : 
+                    if (ascending)
+                    {
+                        baseQuery = baseQuery.OrderBy(course => course.CurrentPrice.Amount);
+                    } else
+                    {
+                        baseQuery = baseQuery.OrderByDescending(course => course.CurrentPrice.Amount);
+                    }
+                break;
+            }
+
+            IQueryable<CourseViewModel> queryLinq = baseQuery
                 .Where(course => course.Title.Contains(search))
                 .Skip(offset)
                 .Take(limit)
