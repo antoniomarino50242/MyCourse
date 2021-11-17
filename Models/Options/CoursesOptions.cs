@@ -11,10 +11,10 @@ namespace MyCourse.Models.Options
     {
         public int PerPage { get; set; }
 
-        public Order Order { get; set; }
+        public CoursesOrderOptions Order { get; set; }
     }
 
-    public partial class Order
+    public partial class CoursesOrderOptions
     {
         public string By { get; set; }
 

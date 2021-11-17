@@ -56,6 +56,7 @@ namespace MyCourse.Models.Services.Application
 
         public async Task<List<CourseViewModel>> GetCoursesAsync(string search, int page, string orderBy, bool ascending)
         {
+            //santizzazione
             page = Math.Max(1, page);
             int limit = coursesOptions.CurrentValue.PerPage;
             int offset = (page - 1) * limit;
@@ -65,6 +66,8 @@ namespace MyCourse.Models.Services.Application
                 orderBy = orderOptions.By;
                 ascending = orderOptions.Ascending;
             }
+
+            //decidere cosa estrarre dal db
             if (orderBy == "CurrentPrice")
             {
                 orderBy = "CurrentPrice_Amount";
