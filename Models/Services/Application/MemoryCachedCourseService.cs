@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
 using MyCourse.Models.ViewModels;
 
@@ -32,16 +33,13 @@ namespace MyCourse.Models.Services.Application
             });
         }
 
-        public Task<List<CourseViewModel>> GetCoursesAsync(string search, int page, string orderBy, bool ascending)
+        public Task<List<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
-
-            
-
-            return memoryCache.GetOrCreateAsync($"Courses{search}-{page}-{orderBy}-{ascending}", cacheEntry =>
+            return memoryCache.GetOrCreateAsync($"Courses{model.Search}-{model.Page}-{model.OrderBy}-{model.Ascending}", cacheEntry =>
             {
                 cacheEntry.SetSize(1);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(timeOptions.CurrentValue.Default));
-                return courseService.GetCoursesAsync(search, page, orderBy, ascending);
+                return courseService.GetCoursesAsync(model);
             });
         }
     }
