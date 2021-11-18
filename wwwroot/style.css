@@ -60,7 +60,7 @@ h2 {
 
 .course-info .subscribe-course {
     margin-bottom: 1em;
-}
+}©
 
 .course-lessons .lesson-duration i, .course-lessons .course-duration i {
     margin-right: 0.3em;
@@ -68,5 +68,15 @@ h2 {
 
 .course-lessons .course-duration {
     font-weight: bold;
-
+}
+section+section{
+    margin-top: 2em;
+}
+.jumbotron {
+    background-image: url('/images/hero.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.jumbotron h1 {
+    font-size: 3.5rem;
 }

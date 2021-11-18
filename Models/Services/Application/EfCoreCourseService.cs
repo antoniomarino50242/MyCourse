@@ -19,12 +19,26 @@ namespace MyCourse.Models.Services.Application
         private readonly MyCourseDbContext dbContext;
         private readonly ILogger<EfCoreCourseService> logger;
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
-
+        
         public EfCoreCourseService(MyCourseDbContext dbContext, ILogger<EfCoreCourseService> logger, IOptionsMonitor<CoursesOptions> coursesOptions)
         {
             this.coursesOptions = coursesOptions;
             this.logger = logger;
             this.dbContext = dbContext;
+        }
+
+        public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
+        {
+            CourseListInputModel inputModel = new CourseListInputModel(
+                search : "",
+                page : 1,
+                orderBy : "Rating",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order);
+
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
         }
 
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
@@ -100,6 +114,20 @@ namespace MyCourse.Models.Services.Application
                 TotalCount = totalCount
             };
             return result;
+        }
+
+        public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
+        {
+            CourseListInputModel inputModel = new CourseListInputModel(
+                search : "",
+                page : 1,
+                orderBy : "Id",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order);
+
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
         }
     }
 }

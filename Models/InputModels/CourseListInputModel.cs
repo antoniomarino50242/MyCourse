@@ -9,6 +9,10 @@ namespace MyCourse.Models.InputModels
     [ModelBinder(BinderType = typeof(CourseListInputModelBinder))]
     public class CourseListInputModel
     {
+        public CourseListInputModel()
+        {
+        }
+
         public CourseListInputModel(string search, int page, string orderBy, bool ascending,int limit, CoursesOrderOptions orderOptions)
         {
 

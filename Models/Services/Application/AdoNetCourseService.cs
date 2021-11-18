@@ -25,6 +25,21 @@ namespace MyCourse.Models.Services.Application
             this.coursesOptions = coursesOptions;
             this.db = db;
         }
+
+        public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
+        {
+            CourseListInputModel inputModel = new CourseListInputModel(
+                search : "",
+                page : 1,
+                orderBy : "Rating",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order);
+
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
+        }
+
         public async Task<CourseDetailViewModel> GetCourseAsync(int id)
         {
             logger.LogInformation("Course {id} requested", id);
@@ -78,6 +93,19 @@ namespace MyCourse.Models.Services.Application
                 TotalCount = Convert.ToInt32(dataSet.Tables[1].Rows[0][0])
             };
             return result;
+        }
+
+        public async Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
+        {
+            CourseListInputModel inputModel = new CourseListInputModel(
+                search : "",
+                page : 1,
+                orderBy : "Id",
+                ascending: false,
+                limit: coursesOptions.CurrentValue.InHome,
+                orderOptions: coursesOptions.CurrentValue.Order);
+            ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
+            return result.Results;
         }
     }
 }
