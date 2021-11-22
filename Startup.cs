@@ -44,8 +44,12 @@ namespace MyCourse
                 Configuration.Bind("ReponseCache:Home", homeProfile);
                 //homeProfile.VaryByQueryKeys = Configuration.GetValue<string[]>("ReponseCache:Home:VaryByQueryKeys");
                 options.CacheProfiles.Add("Home", homeProfile);
-                
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            #if DEBUG
+            .AddRazorRuntimeCompilation()
+            #endif
+            ;
+
             services.AddTransient<ICourseService, AdoNetCourseService>();
             //services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
