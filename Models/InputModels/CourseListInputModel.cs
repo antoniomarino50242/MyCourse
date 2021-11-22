@@ -15,7 +15,6 @@ namespace MyCourse.Models.InputModels
 
         public CourseListInputModel(string search, int page, string orderBy, bool ascending,int limit, CoursesOrderOptions orderOptions)
         {
-
             //sanitizzazione
             if (!orderOptions.Allow.Contains(orderBy))
             {
