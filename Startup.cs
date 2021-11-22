@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application;
@@ -44,7 +45,7 @@ namespace MyCourse
                 //homeProfile.VaryByQueryKeys = Configuration.GetValue<string[]>("ReponseCache:Home:VaryByQueryKeys");
                 options.CacheProfiles.Add("Home", homeProfile);
                 
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddTransient<ICourseService, AdoNetCourseService>();
             //services.AddTransient<ICourseService, EfCoreCourseService>();
             services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
@@ -67,7 +68,7 @@ namespace MyCourse
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
         {
             //if (env.IsDevelopment())
             if (env.IsEnvironment("Development"))
@@ -84,14 +85,21 @@ namespace MyCourse
                 app.UseExceptionHandler("/Error");
             }
             app.UseStaticFiles();
+
+            //EndpointRoutingMiddleware
+            app.UseRouting();
             
             app.UseResponseCaching();
 
             //app.UseMvcWithDefaultRoute();
-            app.UseMvc(routeBuilder => 
+            /*app.UseMvc(routeBuilder => 
             {
                 // Esempio di percorso conforme al template route: /courses/detail/5
                 routeBuilder.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });*/
+            //Endpoint middleware
+            app.UseEndpoints(routeBuilder => {
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }
