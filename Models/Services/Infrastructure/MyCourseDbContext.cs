@@ -30,7 +30,7 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                     builder.Property(money => money.Currency)
                     .HasConversion<string>()
                     .HasColumnName("CurrentPrice_Currency");//superfluo 
-                    builder.Property(money => money.Amount).HasColumnName("CurrentPrice_Amount");//superfluo nel nostro caso
+                    builder.Property(money => money.Amount).HasColumnName("CurrentPrice_Amount").HasConversion<float>();//superfluo nel nostro caso
                 });
                 entity.OwnsOne(course => course.FullPrice, builder => {
                     builder.Property(money => money.Currency).HasConversion<string>();

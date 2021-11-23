@@ -36,7 +36,7 @@ namespace MyCourse.Models.Services.Application
         {
             return memoryCache.GetOrCreateAsync($"Course{id}", cacheEntry =>
             {
-                cacheEntry.SetSize(1);
+                //cacheEntry.SetSize(1);
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(timeOptions.CurrentValue.Default));
                 return courseService.GetCourseAsync(id);
             });
@@ -44,12 +44,24 @@ namespace MyCourse.Models.Services.Application
 
         public Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
-            return memoryCache.GetOrCreateAsync($"Courses{model.Search}-{model.Page}-{model.OrderBy}-{model.Ascending}", cacheEntry =>
+            //Metto in cache i risultati solo per le prime 5 pagine del catalogo, che reputo essere
+            //le più visitate dagli utenti, e che perciò mi permettono di avere il maggior beneficio dalla cache.
+            //E inoltre, metto in cache i risultati solo se l'utente non ha cercato nulla.
+            //In questo modo riduco drasticamente il consumo di memoria RAM
+            bool canCache = model.Page <= 5 && string.IsNullOrEmpty(model.Search);
+            
+            //Se canCache è true, sfrutto il meccanismo di caching
+            if (canCache)
             {
-                cacheEntry.SetSize(1);
-                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(timeOptions.CurrentValue.Default));
-                return courseService.GetCoursesAsync(model);
-            });
+                return memoryCache.GetOrCreateAsync($"Courses{model.Page}-{model.OrderBy}-{model.Ascending}", cacheEntry => 
+                {
+                    cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
+                    return courseService.GetCoursesAsync(model);
+                });
+            }
+
+            //Altrimenti uso il servizio applicativo sottostante, che recupererà sempre i valori dal database
+            return courseService.GetCoursesAsync(model);
         }
 
         public Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
