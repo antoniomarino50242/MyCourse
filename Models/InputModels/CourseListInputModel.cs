@@ -18,7 +18,7 @@ namespace MyCourse.Models.InputModels
                 ascending = orderOptions.Ascending;
             }
 
-            Search = search;
+            Search = search ?? "";
             Page = Math.Max(1, page);
             Limit = Math.Max(1, limit);
             OrderBy = orderBy;
