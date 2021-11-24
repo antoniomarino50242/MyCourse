@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyCourse.Models.Entities.Services.Infrastructure;
+using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.Services.Infrastructure;
@@ -24,7 +25,7 @@ namespace MyCourse
 
         public Startup(IConfiguration configuration)
         {
-            this.Configuration = configuration;
+            Configuration = configuration;
         }
         public IConfiguration Configuration { get; }
 
@@ -34,7 +35,8 @@ namespace MyCourse
         {
             services.AddResponseCaching();
 
-            services.AddMvc(options => {
+            services.AddMvc(options =>
+            {
                 var homeProfile = new CacheProfile();
                 //homeProfile.Duration = Configuration.GetValue<int>("ReponseCache:Home:Duration");
                 //homeProfile.Location = Configuration.GetValue<ResponseCacheLocation>("ResponseCacheLocation:Home:Location");
@@ -44,25 +46,33 @@ namespace MyCourse
                 Configuration.Bind("ReponseCache:Home", homeProfile);
                 //homeProfile.VaryByQueryKeys = Configuration.GetValue<string[]>("ReponseCache:Home:VaryByQueryKeys");
                 options.CacheProfiles.Add("Home", homeProfile);
+
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
             #if DEBUG
             .AddRazorRuntimeCompilation()
             #endif
             ;
 
-            services.AddTransient<ICourseService, AdoNetCourseService>();
-            //services.AddTransient<ICourseService, EfCoreCourseService>();
-            services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
-            services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
-
-            //registro dbcontext 
-            //services.AddScoped<MyCourseDbContext>();
-            //services.AddDbContext<MyCourseDbContext>();
-            services.AddDbContextPool<MyCourseDbContext>(optionsBuilder => 
+            //Usiamo AdoNet o Entity Framework Core per l'accesso ai dati?
+            var persistence = Persistence.EfCore;
+            switch (persistence)
             {
-                string connetionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
-                optionsBuilder.UseSqlite(connetionString);
-            });
+                case Persistence.AdoNet:
+                    services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+                    break;
+
+                case Persistence.EfCore:
+                    services.AddTransient<ICourseService, EfCoreCourseService>();
+                    services.AddDbContextPool<MyCourseDbContext>(optionsBuilder =>
+                    {
+                        string connetionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
+                        optionsBuilder.UseSqlite(connetionString);
+                    });
+                    break;
+            }
+
+            services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
 
             //options
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
@@ -85,14 +95,16 @@ namespace MyCourse
                     string filePath = Path.Combine(env.ContentRootPath, "bin/reload.txt");
                     File.WriteAllText(filePath, DateTime.Now.ToString());
                 });
-            } else{
+            }
+            else
+            {
                 app.UseExceptionHandler("/Error");
             }
             app.UseStaticFiles();
 
             //EndpointRoutingMiddleware
             app.UseRouting();
-            
+
             app.UseResponseCaching();
 
             //app.UseMvcWithDefaultRoute();
@@ -102,7 +114,8 @@ namespace MyCourse
                 routeBuilder.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });*/
             //Endpoint middleware
-            app.UseEndpoints(routeBuilder => {
+            app.UseEndpoints(routeBuilder =>
+            {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
         }
