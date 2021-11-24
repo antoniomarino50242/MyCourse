@@ -23,6 +23,11 @@ namespace MyCourse.Models.Services.Application
             this.courseService = courseService;
         }
 
+        public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        {
+            return courseService.CreateCourseAsync(inputModel);
+        }
+
         public Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             return memoryCache.GetOrCreateAsync($"BestRatingCourses", cacheEntry =>

@@ -27,6 +27,11 @@ namespace MyCourse.Models.Services.Application
             this.dbContext = dbContext;
         }
 
+        public Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(

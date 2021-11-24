@@ -26,6 +26,19 @@ namespace MyCourse.Models.Services.Application
             this.db = db;
         }
 
+        public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
+        {
+            string title = inputModel.Title;
+            string author = "Mario Rossi"; //per il momento così poi si estrapola dal login
+
+            var dataSet = await db.QueryAsync($@"INSERT INTO Courses (Title, Author, ImagePath, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount) VALUES ({title}, {author}, '/Courses/default.png', 'EUR', 0, 'EUR', 0);
+                                                SELECT last_insert_rowid()");
+
+            int courseId = Convert.ToInt32(dataSet.Tables[0].Rows[0][0]);
+            CourseDetailViewModel course = await GetCourseAsync(courseId);
+            return course;                                
+        }
+
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(

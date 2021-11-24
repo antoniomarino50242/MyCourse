@@ -33,5 +33,21 @@ namespace MyCourse.Controllers
             ViewData["Title"] = viewModel.Title;
             return View(viewModel);
         }
+
+        public IActionResult Create()
+        {
+            //Viene mostrato il form all'utente
+            ViewData["Title"] = "Nuovo corso";
+            var inputModel = new CourseCreateInputModel();
+            return View(inputModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel) 
+        {
+            //Viene coinvolto il servizio applicativo in modo che il corso venga creato
+            CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
