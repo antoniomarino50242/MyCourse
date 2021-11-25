@@ -46,6 +46,7 @@ namespace MyCourse.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel) 
         {
+            ViewData["Title"] = "Nuovo corso";
             if (!ModelState.IsValid)
             {
                 return View(inputModel);
