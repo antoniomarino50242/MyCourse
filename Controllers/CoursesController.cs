@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.InputModels;
@@ -45,6 +46,10 @@ namespace MyCourse.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel) 
         {
+            if (!ModelState.IsValid)
+            {
+                return View(inputModel);
+            }
             //Viene coinvolto il servizio applicativo in modo che il corso venga creato
             CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
             return RedirectToAction(nameof(Index));
