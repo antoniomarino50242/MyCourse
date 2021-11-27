@@ -132,5 +132,11 @@ namespace MyCourse.Models.Services.Application
             ListViewModel<CourseViewModel> result = await GetCoursesAsync(inputModel);
             return result.Results;
         }
+
+        public async Task<bool> IsTitleAvailableAsync(string title)
+        {
+            bool titleExists = await dbContext.Courses.AnyAsync(course => EF.Functions.Like(course.Title, title));
+            return !titleExists;
+        }
     }
 }

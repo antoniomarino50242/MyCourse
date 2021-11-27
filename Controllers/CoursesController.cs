@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,6 +28,12 @@ namespace MyCourse.Controllers
                 Input = input
             };
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> IsTitleAvailable(string title)
+        {
+            bool result = await courseService.IsTitleAvailableAsync(title);
+            return Json(result);
         }
 
         public async Task<IActionResult> Detail(int id)
