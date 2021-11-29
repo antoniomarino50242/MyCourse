@@ -6,8 +6,6 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
 {
     public partial class MyCourseDbContext : DbContext
     {
-
-
         public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options)
             : base(options)
         {

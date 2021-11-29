@@ -34,8 +34,9 @@ namespace MyCourse.Models.Entities
         public double Rating { get; private set; }
         public Money FullPrice { get; private set; }
         public Money CurrentPrice { get; private set; }
+        public virtual ICollection<Lesson> Lessons { get; private set; }
 
-        public void changeTitle(string newTitle) {
+        public void ChangeTitle(string newTitle) {
             if (string.IsNullOrWhiteSpace(newTitle))
             {
                 throw new ArgumentException("The course must have a title");
@@ -43,7 +44,7 @@ namespace MyCourse.Models.Entities
             Title = newTitle;
         }
 
-        public void changePrice(Money newFullPrice, Money newDiscountPrice){
+        public void ChangePrice(Money newFullPrice, Money newDiscountPrice){
             if (newFullPrice == null || newDiscountPrice == null)
             {
                throw new ArgumentException("The price can't be null."); 
@@ -60,6 +61,22 @@ namespace MyCourse.Models.Entities
             CurrentPrice = newDiscountPrice;
         }
 
-        public virtual ICollection<Lesson> Lessons { get; private set; }
+        public void ChangeDescription(string newDescription)
+        {
+            if (string.IsNullOrEmpty(newDescription))
+            {
+                throw new ArgumentException("The title can't be null.");
+            }
+            Description = newDescription;
+        }
+
+        public void ChangeEmail(string newEmail)
+        {
+            if (string.IsNullOrEmpty(newEmail))
+            {
+                throw new ArgumentException("The Email can't be empty");
+            }
+            Email = newEmail;
+        }
     }
 }

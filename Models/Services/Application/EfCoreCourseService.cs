@@ -46,6 +46,8 @@ namespace MyCourse.Models.Services.Application
             return CourseDetailViewModel.FromEntity(course);
         }
 
+        
+
         public async Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             CourseListInputModel inputModel = new CourseListInputModel(
@@ -80,6 +82,7 @@ namespace MyCourse.Models.Services.Application
             }
             return viewModel;
         }
+
 
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
@@ -137,6 +140,36 @@ namespace MyCourse.Models.Services.Application
         {
             bool titleExists = await dbContext.Courses.AnyAsync(course => EF.Functions.Like(course.Title, title));
             return !titleExists;
+        }
+        
+        public Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
+        {
+            Course course = await dbContext.Courses.FindAsync(inputModel.Id);
+
+            if (course == null)
+            {
+                throw new CourseNotFoundException(inputModel.Id);
+            }
+
+            course.ChangeTitle(inputModel.Title);
+            course.ChangePrice(inputModel.FullPrice, inputModel.CurrentPrice);
+            course.ChangeDescription(inputModel.Description);
+            course.ChangeEmail(inputModel.Email);
+
+            try
+            {
+                await dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateException exc) when ((exc.InnerException as SqliteException)?.SqliteErrorCode == 19)
+            {
+                throw new CourseTitleUnavailableException(inputModel.Title, exc);
+            }
+            return CourseDetailViewModel.FromEntity(course);
         }
     }
 }

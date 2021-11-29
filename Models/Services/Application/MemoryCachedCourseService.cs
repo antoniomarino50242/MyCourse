@@ -28,6 +28,8 @@ namespace MyCourse.Models.Services.Application
             return courseService.CreateCourseAsync(inputModel);
         }
 
+
+
         public Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             return memoryCache.GetOrCreateAsync($"BestRatingCourses", cacheEntry =>
@@ -46,6 +48,8 @@ namespace MyCourse.Models.Services.Application
                 return courseService.GetCourseAsync(id);
             });
         }
+
+        
 
         public Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
@@ -82,5 +86,15 @@ namespace MyCourse.Models.Services.Application
         {
             return courseService.IsTitleAvailableAsync(title);
         }
+
+        public Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
+        {
+            return courseService.GetCourseForEditingAsync(id);
+        }
+        
+        public Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
+        {
+            return courseService.EditCourseAsync(inputModel);
+        }  
     }
 }
