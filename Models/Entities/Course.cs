@@ -65,7 +65,7 @@ namespace MyCourse.Models.Entities
         {
             if (string.IsNullOrEmpty(newDescription))
             {
-                throw new ArgumentException("The title can't be null.");
+                throw new ArgumentException("The Description can't be null.");
             }
             Description = newDescription;
         }

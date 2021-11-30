@@ -142,9 +142,22 @@ namespace MyCourse.Models.Services.Application
             return !titleExists;
         }
         
-        public Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
+        public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
         {
-            throw new NotImplementedException();
+            IQueryable<CourseEditInputModel> queryLinq = dbContext.Courses
+                .AsNoTracking()
+                .Where(course => course.Id == id)
+                .Select(course => CourseEditInputModel.FromEntity(course));
+            
+            CourseEditInputModel viewModel = await queryLinq.FirstOrDefaultAsync();
+
+            if (viewModel == null)
+            {
+                logger.LogWarning("Course {id} not found", id);
+                throw new CourseNotFoundException(id);
+            }
+
+            return viewModel;
         }
 
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
