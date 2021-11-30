@@ -130,9 +130,9 @@ namespace MyCourse.Models.Services.Application
             return result.Results;
         }
 
-        public async Task<bool> IsTitleAvailableAsync(string title)
+        public async Task<bool> IsTitleAvailableAsync(string title, int id)
         {
-            DataSet result = await db.QueryAsync($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title}");
+            DataSet result = await db.QueryAsync($"SELECT COUNT(*) FROM Courses WHERE Title LIKE {title} AND id<>{id}");
             bool titleAvailable = Convert.ToInt32(result.Tables[0].Rows[0][0]) == 0;
             return titleAvailable;
         }

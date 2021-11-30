@@ -82,9 +82,9 @@ namespace MyCourse.Models.Services.Application
             });
         }
 
-        public Task<bool> IsTitleAvailableAsync(string title)
+        public Task<bool> IsTitleAvailableAsync(string title, int id)
         {
-            return courseService.IsTitleAvailableAsync(title);
+            return courseService.IsTitleAvailableAsync(title, id);
         }
 
         public Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
@@ -92,9 +92,11 @@ namespace MyCourse.Models.Services.Application
             return courseService.GetCourseForEditingAsync(id);
         }
         
-        public Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
+        public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
-            return courseService.EditCourseAsync(inputModel);
+            CourseDetailViewModel viewModel = await courseService.EditCourseAsync(inputModel);
+            memoryCache.Remove($"Course{inputModel.Id}");
+            return viewModel;
         }  
     }
 }

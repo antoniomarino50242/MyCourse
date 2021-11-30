@@ -38,7 +38,7 @@
                         <label asp-for="FullPrice"></label>
                         <div class="input-group">
                             <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="FullPrice.Currency"></select>
-                            <input type="number" step="0.1" class="form-control form-control-block" asp-for="FullPrice.Amount">
+                            <input type="number" step="0.01" class="form-control form-control-block" asp-for="FullPrice.Amount">
                             <span asp-validation-for="FullPrice.Amount"></span>
                         </div>
                     </div>
@@ -46,7 +46,7 @@
                         <label asp-for="CurrentPrice"></label>
                         <div class="input-group">
                             <select asp-items="@Html.GetEnumSelectList<Currency>()" asp-for="CurrentPrice.Currency"></select>
-                            <input type="number" step="0.1" class="form-control from-control-block" asp-for="CurrentPrice.Amount">
+                            <input type="number" step="0.01" class="form-control from-control-block" asp-for="CurrentPrice.Amount">
                             <span asp-validation-for="CurrentPrice.Amount"></span>
                         </div>
                     </div>

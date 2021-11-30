@@ -30,9 +30,9 @@ namespace MyCourse.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> IsTitleAvailable(string title)
+        public async Task<IActionResult> IsTitleAvailable(string title, int id = 0)
         {
-            bool result = await courseService.IsTitleAvailableAsync(title);
+            bool result = await courseService.IsTitleAvailableAsync(title, id);
             return Json(result);
         }
 
@@ -60,7 +60,8 @@ namespace MyCourse.Controllers
                 {
                     //Viene coinvolto il servizio applicativo in modo che il corso venga creato
                     CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
-                    return RedirectToAction(nameof(Index));
+                    TempData["ConfirmationMessage"] = "Corso creato con successo! Inserisci ora il resto delle informazioni.";
+                    return RedirectToAction(nameof(Edit), new{ id = course.Id});
                 }
                 catch (CourseTitleUnavailableException)
                 {
@@ -87,7 +88,8 @@ namespace MyCourse.Controllers
                 try
                 {
                     CourseDetailViewModel course = await courseService.EditCourseAsync(inputModel);
-                    return RedirectToAction(nameof(Index));
+                    TempData["ConfirmationMessage"] = "Dati modificati con successo!";
+                    return RedirectToAction(nameof(Detail), new {id = inputModel.Id});
                 }
                 catch (CourseTitleUnavailableException)
                 {
