@@ -1,6 +1,6 @@
 @model CourseEditInputModel
 <section class="course-info">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         <div class="row">
             <div class="col-md-9">
                 <h1>@ViewData["Title"]</h1>
@@ -52,7 +52,11 @@
                     </div>
                     <div class="form-group">
                         <label asp-for="ImagePath"></label>
-                        <img src="@Model.ImagePath" >
+                        <img id="preview" src="@Model.ImagePath" class="img-fluid">
+                        <div class="custom-file mt-3">
+                            <input type="file" class="custom-file-input" asp-for="Image" onchange="updatePreview(this)">
+                            <label class="custom-file-label" asp-for= "Image"></label>
+                        </div>
                     </div>
                 </aside>
             </div>
@@ -64,3 +68,13 @@
     <partial name="_Validation"></partial>
     <partial name="_Summernote"></partial>
 }
+
+<script>
+    function updatePreview(inputFile) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#preview').attr('src', e.target.result);
+        };
+        reader.readAsDataURL(inputFile.files[0]);
+    }
+</script>
