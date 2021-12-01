@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyCourse.Customization.ModelBinders;
 using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
@@ -47,6 +50,9 @@ namespace MyCourse
                 //homeProfile.VaryByQueryKeys = Configuration.GetValue<string[]>("ReponseCache:Home:VaryByQueryKeys");
                 options.CacheProfiles.Add("Home", homeProfile);
 
+                //model binder personalizzati
+                options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
             #if DEBUG
             .AddRazorRuntimeCompilation()
@@ -54,7 +60,7 @@ namespace MyCourse
             ;
 
             //Usiamo AdoNet o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.EfCore;
+            var persistence = Persistence.AdoNet;
             switch (persistence)
             {
                 case Persistence.AdoNet:
@@ -102,6 +108,14 @@ namespace MyCourse
             }
             app.UseStaticFiles();
 
+            //Nel caso volessi impostare una Culture specifica...
+            /*var appCulture = CultureInfo.InvariantCulture;
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(appCulture),
+                SupportedCultures = new[] { appCulture }
+            });*/
+
             //EndpointRoutingMiddleware
             app.UseRouting();
 
@@ -113,6 +127,7 @@ namespace MyCourse
                 // Esempio di percorso conforme al template route: /courses/detail/5
                 routeBuilder.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });*/
+
             //Endpoint middleware
             app.UseEndpoints(routeBuilder =>
             {
