@@ -78,5 +78,14 @@ namespace MyCourse.Models.Entities
             }
             Email = newEmail;
         }
+
+        public void ChangeImagePath(string newImagePath)
+        {
+            if (string.IsNullOrEmpty(newImagePath))
+            {
+                throw new ArgumentException("The image path can't be empty");
+            }
+            ImagePath = newImagePath;
+        }
     }
 }

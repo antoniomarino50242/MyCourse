@@ -79,12 +79,14 @@ namespace MyCourse
             }
 
             services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
+            services.AddSingleton<IImagePersister, MagickNetImagePersister>();
 
             //options
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
             services.Configure<TimeOptions>(Configuration.GetSection("Time"));
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
