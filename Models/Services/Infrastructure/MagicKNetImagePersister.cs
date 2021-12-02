@@ -16,9 +16,9 @@ namespace MyCourse.Models.Services.Infrastructure
         private readonly SemaphoreSlim semaphore;
         private readonly IOptionsMonitor<ImageOptions> imageOptions;
 
-        public MagickNetImagePersister(IWebHostEnvironment env, IOptionsMonitor<ImageOptions> imageOptions)
+        public MagickNetImagePersister(IWebHostEnvironment env, IOptionsMonitor<ImageOptions> imageOption)
         {
-            this.imageOptions = imageOptions;
+            this.imageOptions = imageOption;
             ResourceLimits.Height = 4000;
             ResourceLimits.Width = 4000;
             semaphore = new SemaphoreSlim(2);

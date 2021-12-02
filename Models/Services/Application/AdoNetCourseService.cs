@@ -182,7 +182,7 @@ namespace MyCourse.Models.Services.Application
                 }
                 catch (Exception exc)
                 {
-                    throw new ArgumentException("Da fare");
+                    throw new CourseImageInvalidException(inputModel.Id, exc);
                 }
             }
 

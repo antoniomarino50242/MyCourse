@@ -86,7 +86,7 @@ namespace MyCourse
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
             services.Configure<TimeOptions>(Configuration.GetSection("Time"));
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
-            
+            services.Configure<ImageOptions>(Configuration.GetSection("ImageOption"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
