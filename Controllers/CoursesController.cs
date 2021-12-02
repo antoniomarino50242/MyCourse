@@ -93,7 +93,11 @@ namespace MyCourse.Controllers
                 }
                 catch (CourseTitleUnavailableException)
                 {
-                    ModelState.AddModelError(nameof(CourseDetailViewModel.Title), "Questo titolo già esiste");
+                    ModelState.AddModelError(nameof(CourseEditInputModel.Title), "Questo titolo già esiste");
+                }
+                catch (CourseImageInvalidException)
+                {
+                    ModelState.AddModelError(nameof(CourseEditInputModel.Image), "L'immagine selezionata non è valida! ");
                 }
             }
             ViewData["Title"] = "Modifica corso";
