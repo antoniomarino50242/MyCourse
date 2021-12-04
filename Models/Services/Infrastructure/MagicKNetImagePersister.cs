@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using ImageMagick;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.Options;
 
 namespace MyCourse.Models.Services.Infrastructure
@@ -56,6 +58,10 @@ namespace MyCourse.Models.Services.Infrastructure
 
                 //Restituire il percorso al file
                 return path;
+            }
+            catch(Exception exc)
+            {
+                throw new ImagePersistenceException(exc);
             }
             finally
             {

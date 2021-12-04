@@ -6,6 +6,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.Options;
 using MyCourse.Models.ValueTypes;
 
@@ -52,25 +53,33 @@ namespace MyCourse.Models.Services.Infrastructure
 
                     //Inviamo la query al database e otteniamo un SqliteDataReader
                     //per leggere i risultati
-                    using (var reader = await cmd.ExecuteReaderAsync())
+                    try
                     {
-                        var dataSet = new DataSet();
-
-                        //TODO: La riga qui sotto va rimossa quando la issue sarà risolta
-                        //https://github.com/aspnet/EntityFrameworkCore/issues/14963
-                        dataSet.EnforceConstraints = false;
-
-                        //Creiamo tanti DataTable per quante sono le tabelle
-                        //di risultati trovate dal SqliteDataReader
-                        do
+                        using (var reader = await cmd.ExecuteReaderAsync())
                         {
-                            var dataTable = new DataTable();
-                            dataSet.Tables.Add(dataTable);
-                            dataTable.Load(reader);
-                        } while (!reader.IsClosed);
+                            var dataSet = new DataSet();
 
-                        return dataSet;
+                            //TODO: La riga qui sotto va rimossa quando la issue sarà risolta
+                            //https://github.com/aspnet/EntityFrameworkCore/issues/14963
+                            dataSet.EnforceConstraints = false;
+
+                            //Creiamo tanti DataTable per quante sono le tabelle
+                            //di risultati trovate dal SqliteDataReader
+                            do
+                            {
+                                var dataTable = new DataTable();
+                                dataSet.Tables.Add(dataTable);
+                                dataTable.Load(reader);
+                            } while (!reader.IsClosed);
+
+                            return dataSet;
+                        }     
                     }
+                    catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
+                    {
+                        throw new ConstraintViolationException(exc);
+                    }
+                    
                 }
             }
         }
