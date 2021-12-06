@@ -8,6 +8,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Exceptions;
+using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
@@ -141,7 +142,7 @@ namespace MyCourse.Models.Services.Application
 
         public async Task<CourseEditInputModel> GetCourseForEditingAsync(int id)
         {
-            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id={id}";
+            FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Email, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency, RowVersion FROM Courses WHERE Id={id}";
             DataSet dataSet = await db.QueryAsync(query);
 
             var courseTable = dataSet.Tables[0];
@@ -167,7 +168,16 @@ namespace MyCourse.Models.Services.Application
                 int affectedRows = await db.CommandAsync($"UPDATE Courses SET ImagePath=COALESCE({imagePath}, ImagePath), Title={inputModel.Title}, Description={inputModel.Description}, Email={inputModel.Email}, CurrentPrice_Currency={inputModel.CurrentPrice.Currency}, CurrentPrice_Amount={inputModel.CurrentPrice.Amount}, FullPrice_Currency={inputModel.FullPrice.Currency}, FullPrice_Amount={inputModel.FullPrice.Amount} WHERE Id={inputModel.Id} AND RowVersion={inputModel.RowVersion}");
                 if (affectedRows == 0)
                 {
-                    throw new CourseNotFoundException(inputModel.Id);
+                    bool courseExist = await db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Courses WHERE Id={inputModel.Id}");
+                    if (courseExist)
+                    {
+                        throw new OptimisticConcurrencyException();
+                    }
+                    else
+                    {
+                        throw new CourseNotFoundException(inputModel.Id);
+                    }
+                    
                 }
             }
             catch (ConstraintViolationException exc)

@@ -77,7 +77,8 @@ namespace MyCourse.Models.InputModels
                     Enum.Parse<Currency>(Convert.ToString(courseRow["CurrentPrice_Currency"])),
                     Convert.ToDecimal(courseRow["CurrentPrice_Amount"])
                 ),
-                Id = Convert.ToInt32(courseRow["Id"])
+                Id = Convert.ToInt32(courseRow["Id"]),
+                RowVersion = Convert.ToString(courseRow["RowVersion"])
             };
             return courseEditInputModel;
         }

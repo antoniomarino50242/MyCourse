@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.Exceptions;
+using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels;
 using MyCourse.Models.Services.Application;
 using MyCourse.Models.ViewModels;
@@ -98,6 +99,10 @@ namespace MyCourse.Controllers
                 catch (CourseImageInvalidException)
                 {
                     ModelState.AddModelError(nameof(CourseEditInputModel.Image), "L'immagine selezionata non è valida! ");
+                }
+                catch(OptimisticConcurrencyException)
+                {
+                    ModelState.AddModelError("","Spiacenti il salvataggio non è andato a buon fine perchè nel frattempo un altro utente ha aggiornato il corso. Ti preghiamo di aggiornare la pagina e attuare le modifiche.");
                 }
             }
             ViewData["Title"] = "Modifica corso";
