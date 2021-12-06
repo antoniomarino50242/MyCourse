@@ -23,6 +23,8 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                 entity.ToTable("Courses");//superfluo se la tabella si chiama come la prop che espone il set
                 entity.HasKey(course => course.Id);//superfluo se la prop si chiama id o coursesId
 
+                entity.Property(course => course.RowVersion).IsRowVersion();
+
                 //mapping per le owned types
                 entity.OwnsOne(course => course.CurrentPrice, builder => {
                     builder.Property(money => money.Currency)
@@ -38,7 +40,6 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); // superflua se la prop si chiama courseId
-
                 #region Mapping generato automaticamente dal tool di reverse engeniring
                 /*
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -83,6 +84,7 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
             */
             });
                 #endregion
+                
 
             modelBuilder.Entity<Lesson>(entity =>
             {

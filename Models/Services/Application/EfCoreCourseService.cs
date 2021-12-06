@@ -9,6 +9,7 @@ using Microsoft.Extensions.Options;
 using MyCourse.Models.Entities;
 using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Exceptions;
+using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
@@ -177,12 +178,28 @@ namespace MyCourse.Models.Services.Application
             course.ChangeDescription(inputModel.Description);
             course.ChangeEmail(inputModel.Email);
 
-            string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
-            course.ChangeImagePath(imagePath);
+            dbContext.Entry(course).Property(course => course.RowVersion).OriginalValue = inputModel.RowVersion;
             
+            if (inputModel.Image != null)
+            {
+                try
+                {
+                    string imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
+                    course.ChangeImagePath(imagePath);
+                }
+                catch (Exception exc)
+                {
+                    throw new CourseImageInvalidException(inputModel.Id, exc);
+                }
+            }
+
             try
             {
                 await dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw new OptimisticConcurrencyException();
             }
             catch (DbUpdateException exc) when ((exc.InnerException as SqliteException)?.SqliteErrorCode == 19)
             {

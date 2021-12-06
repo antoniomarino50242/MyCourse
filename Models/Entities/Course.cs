@@ -35,6 +35,7 @@ namespace MyCourse.Models.Entities
         public Money FullPrice { get; private set; }
         public Money CurrentPrice { get; private set; }
         public virtual ICollection<Lesson> Lessons { get; private set; }
+        public string RowVersion { get; private set; }
 
         public void ChangeTitle(string newTitle) {
             if (string.IsNullOrWhiteSpace(newTitle))
