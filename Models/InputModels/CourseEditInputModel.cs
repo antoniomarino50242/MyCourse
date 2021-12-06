@@ -47,7 +47,7 @@ namespace MyCourse.Models.InputModels
 
         [Display(Name = "Nuova immagine...")]
         public IFormFile Image { get; set; }
-
+        public string RowVersion { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
