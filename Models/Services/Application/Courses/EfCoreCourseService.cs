@@ -15,7 +15,7 @@ using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 
-namespace MyCourse.Models.Services.Application
+namespace MyCourse.Models.Services.Application.Courses
 {
     public class EfCoreCourseService : ICourseService
     {
@@ -179,7 +179,7 @@ namespace MyCourse.Models.Services.Application
             course.ChangeEmail(inputModel.Email);
 
             dbContext.Entry(course).Property(course => course.RowVersion).OriginalValue = inputModel.RowVersion;
-            
+
             if (inputModel.Image != null)
             {
                 try

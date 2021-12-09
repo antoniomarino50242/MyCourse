@@ -16,7 +16,7 @@ using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
 
-namespace MyCourse.Models.Services.Application
+namespace MyCourse.Models.Services.Application.Courses
 {
     public class AdoNetCourseService : ICourseService
     {
@@ -161,7 +161,7 @@ namespace MyCourse.Models.Services.Application
             try
             {
                 string imagePath = null;
-                if(inputModel.Image != null)
+                if (inputModel.Image != null)
                 {
                     imagePath = await imagePersister.SaveCourseImageAsync(inputModel.Id, inputModel.Image);
                 }
@@ -177,7 +177,7 @@ namespace MyCourse.Models.Services.Application
                     {
                         throw new CourseNotFoundException(inputModel.Id);
                     }
-                    
+
                 }
             }
             catch (ConstraintViolationException exc)

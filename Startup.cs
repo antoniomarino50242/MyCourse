@@ -18,7 +18,7 @@ using MyCourse.Customization.ModelBinders;
 using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
-using MyCourse.Models.Services.Application;
+using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.Services.Infrastructure;
 
 namespace MyCourse

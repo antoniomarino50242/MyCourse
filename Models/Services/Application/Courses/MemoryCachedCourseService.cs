@@ -8,7 +8,7 @@ using MyCourse.Models.InputModels;
 using MyCourse.Models.Options;
 using MyCourse.Models.ViewModels;
 
-namespace MyCourse.Models.Services.Application
+namespace MyCourse.Models.Services.Application.Courses
 {
     public class MemoryCachedCourseService : ICachedCourseService
     {
@@ -49,7 +49,7 @@ namespace MyCourse.Models.Services.Application
             });
         }
 
-        
+
 
         public Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
@@ -58,11 +58,11 @@ namespace MyCourse.Models.Services.Application
             //E inoltre, metto in cache i risultati solo se l'utente non ha cercato nulla.
             //In questo modo riduco drasticamente il consumo di memoria RAM
             bool canCache = model.Page <= 5 && string.IsNullOrEmpty(model.Search);
-            
+
             //Se canCache è true, sfrutto il meccanismo di caching
             if (canCache)
             {
-                return memoryCache.GetOrCreateAsync($"Courses{model.Page}-{model.OrderBy}-{model.Ascending}", cacheEntry => 
+                return memoryCache.GetOrCreateAsync($"Courses{model.Page}-{model.OrderBy}-{model.Ascending}", cacheEntry =>
                 {
                     cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(60));
                     return courseService.GetCoursesAsync(model);
@@ -75,7 +75,7 @@ namespace MyCourse.Models.Services.Application
 
         public Task<List<CourseViewModel>> GetMostRecentCoursesAsync()
         {
-            return memoryCache.GetOrCreateAsync($"MostRecentCourses", cacheEntry => 
+            return memoryCache.GetOrCreateAsync($"MostRecentCourses", cacheEntry =>
             {
                 cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(timeOptions.CurrentValue.Default));
                 return courseService.GetMostRecentCoursesAsync();
@@ -91,12 +91,12 @@ namespace MyCourse.Models.Services.Application
         {
             return courseService.GetCourseForEditingAsync(id);
         }
-        
+
         public async Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel)
         {
             CourseDetailViewModel viewModel = await courseService.EditCourseAsync(inputModel);
             memoryCache.Remove($"Course{inputModel.Id}");
             return viewModel;
-        }  
+        }
     }
 }
