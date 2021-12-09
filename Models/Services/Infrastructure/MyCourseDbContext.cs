@@ -23,6 +23,7 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                 entity.ToTable("Courses");//superfluo se la tabella si chiama come la prop che espone il set
                 entity.HasKey(course => course.Id);//superfluo se la prop si chiama id o coursesId
 
+                entity.HasIndex(course => course.Title).IsUnique();
                 entity.Property(course => course.RowVersion).IsRowVersion();
 
                 //mapping per le owned types
