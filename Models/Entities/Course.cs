@@ -9,21 +9,15 @@ namespace MyCourse.Models.Entities
     {
         public Course(string title, string author)
         {
-            if (string.IsNullOrWhiteSpace(title))
-            {
-                throw new ArgumentException("The course must have a title.");
-            }
-            if (string.IsNullOrWhiteSpace(author))
-            {
-                throw new ArgumentException("The course must have an author");
-            }
-            Title = title;
-            Author = author;
+            ChangeTitle(title);
+            ChangeAuthor(author);
             Lessons = new HashSet<Lesson>();
             CurrentPrice = new Money(Currency.EUR, 0);
             FullPrice = new Money(Currency.EUR, 0);
             ImagePath = "/Courses/default.png";
         }
+
+        
 
         public int Id { get; private set; }
         public string Title { get; private set; }
@@ -87,6 +81,14 @@ namespace MyCourse.Models.Entities
                 throw new ArgumentException("The image path can't be empty");
             }
             ImagePath = newImagePath;
+        }
+        private void ChangeAuthor(string author)
+        {
+            if (string.IsNullOrWhiteSpace(author))
+            {
+                throw new ArgumentException("The Author must have a name");
+            }
+            Author = author;
         }
     }
 }

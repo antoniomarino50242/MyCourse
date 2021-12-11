@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -19,6 +13,7 @@ using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.Services.Application.Lessons;
 using MyCourse.Models.Services.Infrastructure;
 
 namespace MyCourse
@@ -65,11 +60,13 @@ namespace MyCourse
             {
                 case Persistence.AdoNet:
                     services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<ILessonService, AdoNetLessonService>();
                     services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
                     break;
 
                 case Persistence.EfCore:
                     services.AddTransient<ICourseService, EfCoreCourseService>();
+                    services.AddTransient<ILessonService, EfCoreLessonService>();
                     services.AddDbContextPool<MyCourseDbContext>(optionsBuilder =>
                     {
                         string connetionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
@@ -79,6 +76,7 @@ namespace MyCourse
             }
 
             services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
+            services.AddTransient<ICachedLessonService, MemoryCachedLessonService>();
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
 
             //options

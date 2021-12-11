@@ -26,15 +26,22 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                 entity.HasIndex(course => course.Title).IsUnique();
                 entity.Property(course => course.RowVersion).IsRowVersion();
 
-                //mapping per le owned types
-                entity.OwnsOne(course => course.CurrentPrice, builder => {
+                //mapping per gli owned types
+                entity.OwnsOne(course => course.CurrentPrice, builder =>
+                {
                     builder.Property(money => money.Currency)
-                    .HasConversion<string>()
-                    .HasColumnName("CurrentPrice_Currency");//superfluo 
-                    builder.Property(money => money.Amount).HasColumnName("CurrentPrice_Amount").HasConversion<float>();//superfluo nel nostro caso
+                        .HasConversion<string>()
+                        .HasColumnName("CurrentPrice_Currency");//superfluo 
+                    builder.Property(money => money.Amount)
+                        .HasColumnName("CurrentPrice_Amount")
+                        .HasConversion<float>();//superfluo nel nostro caso
                 });
-                entity.OwnsOne(course => course.FullPrice, builder => {
-                    builder.Property(money => money.Currency).HasConversion<string>();
+                entity.OwnsOne(course => course.FullPrice, builder =>
+                {
+                    builder.Property(money => money.Currency)
+                        .HasConversion<string>();
+                    builder.Property(money => money.Amount)
+                        .HasConversion<float>(); //Questo indica al meccanismo delle migration che la colonna della tabella dovrà essere creata di tipo numerico
                 });
 
                 //mapping per le relazioni
@@ -84,11 +91,14 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                     .HasColumnType("TEXT (100)");       
             */
             });
-                #endregion
-                
+            #endregion
+
 
             modelBuilder.Entity<Lesson>(entity =>
             {
+                entity.Property(lesson => lesson.RowVersion).IsRowVersion();
+                entity.Property(lesson => lesson.Order).HasDefaultValue(1000).ValueGeneratedNever();
+                
                 /*entity.HasOne(lesson => lesson.Course)
                       .WithMany(course => course.Lessons);*/
                 #region Mapping generato automaticamente dal tool di reverse engeniring
@@ -110,7 +120,7 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                     .WithMany(p => p.Lessons)
                     .HasForeignKey(d => d.CourseId);
             */
-            #endregion
+                #endregion
             });
         }
     }

@@ -10,10 +10,11 @@ using MyCourse.Models.Entities;
 using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
-using MyCourse.Models.InputModels;
+using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
+using MyCourse.Models.ViewModels.Courses;
 
 namespace MyCourse.Models.Services.Application.Courses
 {

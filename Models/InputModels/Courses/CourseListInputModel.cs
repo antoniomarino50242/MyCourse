@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using MyCourse.Customization.ModelBinders;
 using MyCourse.Models.Options;
 
-namespace MyCourse.Models.InputModels
+namespace MyCourse.Models.InputModels.Courses
 {
     [ModelBinder(BinderType = typeof(CourseListInputModelBinder))]
     public class CourseListInputModel
     {
-        public CourseListInputModel(string search, int page, string orderBy, bool ascending,int limit, CoursesOrderOptions orderOptions)
+        public CourseListInputModel(string search, int page, string orderBy, bool ascending, int limit, CoursesOrderOptions orderOptions)
         {
             //sanitizzazione
             if (!orderOptions.Allow.Contains(orderBy))

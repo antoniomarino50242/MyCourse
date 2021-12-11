@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
-using ImageMagick;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
-using MyCourse.Models.InputModels;
+using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
+using MyCourse.Models.ViewModels.Courses;
+using MyCourse.Models.ViewModels.Lessons;
 
 namespace MyCourse.Models.Services.Application.Courses
 {
@@ -39,14 +39,14 @@ namespace MyCourse.Models.Services.Application.Courses
 
             try
             {
-                int courseId = await db.QueryScalarAsync<int>($@"INSERT INTO Courses (Title, Author, ImagePath, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount) VALUES ({title}, {author}, '/Courses/default.png', 'EUR', 0, 'EUR', 0);
+                int courseId = await db.QueryScalarAsync<int>($@"INSERT INTO Courses (Title, Author, ImagePath, Rating, CurrentPrice_Currency, CurrentPrice_Amount, FullPrice_Currency, FullPrice_Amount) VALUES ({title}, {author}, '/Courses/default.png', 0, 'EUR', 0, 'EUR', 0);
                                                 SELECT last_insert_rowid()");
                 CourseDetailViewModel course = await GetCourseAsync(courseId);
                 return course;
             }
-            catch (SqliteException exc) when (exc.SqliteErrorCode == 19)
+            catch (ConstraintViolationException exc)
             {
-                throw new CourseTitleUnavailableException(title, exc);
+                throw new CourseTitleUnavailableException(inputModel.Title, exc);
             }
         }
 
@@ -69,7 +69,7 @@ namespace MyCourse.Models.Services.Application.Courses
             logger.LogInformation("Course {id} requested", id);
 
             FormattableString query = $@"SELECT Id, Title, Description, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE Id={id}
-            ; SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId={id}";
+            ; SELECT Id, Title, Description, Duration FROM Lessons WHERE CourseId={id} ORDER BY [Order], Id";
 
             DataSet dataSet = await db.QueryAsync(query);
 

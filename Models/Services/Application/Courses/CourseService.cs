@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using MyCourse.Models.Enums;
 using MyCourse.Models.ValueTypes;
-using MyCourse.Models.ViewModels;
+using MyCourse.Models.ViewModels.Courses;
+using MyCourse.Models.ViewModels.Lessons;
 
 namespace MyCourse.Models.Services.Application.Courses
 {
+    [Obsolete]
+    ///<summary>Questo è un servizio che abbiamo usato all'inizio del progetto per fornire dati di test. Ora non è usato.</summary>
     public class CourseService // : ICourseService
     {
         public List<CourseViewModel> GetCourses()
