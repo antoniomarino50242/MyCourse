@@ -208,5 +208,17 @@ namespace MyCourse.Models.Services.Application.Courses
             }
             return CourseDetailViewModel.FromEntity(course);
         }
+        public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel) 
+        {
+            Course course = await dbContext.Courses.FindAsync(inputModel.Id);
+
+            if (course == null)
+            {
+                throw new CourseNotFoundException(inputModel.Id);
+            }
+
+            course.changeStatus(Enums.CourseStatus.Deleted);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }

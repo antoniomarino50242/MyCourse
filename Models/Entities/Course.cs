@@ -11,6 +11,7 @@ namespace MyCourse.Models.Entities
         {
             ChangeTitle(title);
             ChangeAuthor(author);
+            changeStatus(CourseStatus.Draft);
             Lessons = new HashSet<Lesson>();
             CurrentPrice = new Money(Currency.EUR, 0);
             FullPrice = new Money(Currency.EUR, 0);
@@ -30,6 +31,13 @@ namespace MyCourse.Models.Entities
         public Money CurrentPrice { get; private set; }
         public virtual ICollection<Lesson> Lessons { get; private set; }
         public string RowVersion { get; private set; }
+        public CourseStatus Status { get; private set; }
+
+        public void changeStatus(CourseStatus newStatus)
+        {
+            //Aggiungere logica di validazione(Come cambiare stato solo se ci stà la descrizione del corso) 
+            Status = newStatus;
+        }
 
         public void ChangeTitle(string newTitle) {
             if (string.IsNullOrWhiteSpace(newTitle))

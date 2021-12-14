@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.Entities.Services.Infrastructure
 {
@@ -25,6 +26,7 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
 
                 entity.HasIndex(course => course.Title).IsUnique();
                 entity.Property(course => course.RowVersion).IsRowVersion();
+                entity.Property(course => course.Status).HasConversion<String>();
 
                 //mapping per gli owned types
                 entity.OwnsOne(course => course.CurrentPrice, builder =>
@@ -48,6 +50,10 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); // superflua se la prop si chiama courseId
+
+                //Global Query Filter
+                entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
+
                 #region Mapping generato automaticamente dal tool di reverse engeniring
                 /*
                 entity.Property(e => e.Id).ValueGeneratedNever();

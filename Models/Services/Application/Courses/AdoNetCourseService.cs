@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.Exceptions.Infrastructure;
@@ -102,8 +102,8 @@ namespace MyCourse.Models.Services.Application.Courses
             string orderBy = model.OrderBy == "CurrentPrice" ? "CurrentPrice_Amount" : model.OrderBy;
             string direction = model.Ascending ? "ASC" : "DESC";
 
-            FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE title LIKE {"%" + model.Search + "%"} ORDER BY {(Sql)orderBy} {(Sql)direction} LIMIT {model.Limit} OFFSET {model.Offset};
-            SELECT COUNT(*) FROM Courses WHERE title LIKE {"%" + model.Search + "%"}";
+            FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)} ORDER BY {(Sql)orderBy} {(Sql)direction} LIMIT {model.Limit} OFFSET {model.Offset};
+            SELECT COUNT(*) FROM Courses WHERE title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)}";
             DataSet dataSet = await db.QueryAsync(query);
             var dataTable = dataSet.Tables[0];
             var courseList = new List<CourseViewModel>();
@@ -191,6 +191,18 @@ namespace MyCourse.Models.Services.Application.Courses
 
             CourseDetailViewModel course = await GetCourseAsync(inputModel.Id);
             return course;
+        }
+
+        public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
+        {
+            int affectedRows = await this.db.CommandAsync($"UPDATE Courses SET Status={nameof(CourseStatus.Deleted)} WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)}");
+
+            if (affectedRows == 0)
+            {
+                throw new CourseNotFoundException(inputModel.Id);
+            }
+
+
         }
     }
 }
