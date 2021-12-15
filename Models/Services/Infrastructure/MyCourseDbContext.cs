@@ -1,11 +1,12 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MyCourse.Models.Enums;
 
 namespace MyCourse.Models.Entities.Services.Infrastructure
 {
-    public partial class MyCourseDbContext : DbContext
+    public partial class MyCourseDbContext : IdentityDbContext
     {
         public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options)
             : base(options)
@@ -17,8 +18,9 @@ namespace MyCourse.Models.Entities.Services.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+            
             modelBuilder.HasAnnotation("ProductVersion", "2.2.0-rtm-35687");
-
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.ToTable("Courses");//superfluo se la tabella si chiama come la prop che espone il set
