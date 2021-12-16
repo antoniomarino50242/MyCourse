@@ -6,15 +6,14 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MyCourse.Models.Entities;
-using MyCourse.Models.Entities.Services.Infrastructure;
+using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
-using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
+using MyCourse.Models.Entities;
 
 namespace MyCourse.Models.Services.Application.Courses
 {

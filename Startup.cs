@@ -11,11 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyCourse.Customization.Identity;
 using MyCourse.Customization.ModelBinders;
-using MyCourse.Models.Entities.Services.Infrastructure;
-using MyCourse.Models.Enums;
-using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.Services.Application.Lessons;
+using MyCourse.Models.Enums;
+using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 
 namespace MyCourse
@@ -51,7 +50,7 @@ namespace MyCourse
                 //model binder personalizzati
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
 
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            })
             #if DEBUG
             .AddRazorRuntimeCompilation()
             #endif
