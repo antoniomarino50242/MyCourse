@@ -16,6 +16,7 @@ using MyCourse.Models.Services.Application.Lessons;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
+using MyCourse.Models.Entities;
 
 namespace MyCourse
 {
@@ -68,7 +69,7 @@ namespace MyCourse
 
                 case Persistence.EfCore:
 
-                    services.AddDefaultIdentity<IdentityUser>(options=>{
+                    services.AddDefaultIdentity<ApplicationUser>(options=>{
                         options.Password.RequireDigit = true;
                         options.Password.RequiredLength = 8;
                         options.Password.RequireLowercase = true;
@@ -76,7 +77,7 @@ namespace MyCourse
                         options.Password.RequireNonAlphanumeric = true;
                         options.Password.RequiredUniqueChars = 4;
                     })
-                    .AddPasswordValidator<CommonPasswordValidator<IdentityUser>>()
+                    .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
                     .AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
