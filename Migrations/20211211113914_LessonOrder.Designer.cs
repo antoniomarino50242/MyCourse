@@ -3,8 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MyCourse.Models.Entities.Services.Infrastructure;
+using MyCourse.Models.Services.Infrastructure;
 
 namespace MyCourse.Migrations
 {

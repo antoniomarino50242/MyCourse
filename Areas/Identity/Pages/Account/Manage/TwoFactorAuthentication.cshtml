@@ -40,8 +40,7 @@
     <a asp-page="./Disable2fa" class="btn btn-link">Disabilita autenticazione a due fattori</a><br>
     <a asp-page="./GenerateRecoveryCodes" class="btn btn-link">Reimposta codici di recupero</a>
 }
-
-<h5>Authenticator app</h5>
+<h5>App di autenticazione</h5>
 @if (!Model.HasAuthenticator)
 {
     <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">Aggiungi un'app authenticator</a>

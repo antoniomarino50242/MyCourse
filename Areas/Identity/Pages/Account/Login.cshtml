@@ -2,7 +2,7 @@
 @model LoginModel
 
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Accedi";
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -42,7 +42,7 @@
                         <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registrati come nuovo utente.</a>
                     </p>
                     <p>
-                        <button type="submit" asp-page-handler="SendVerificationEmail" class="btn-link" style="padding:0px;margin:0px;border:0px">Resend email confirmation</button>
+                        <button type="submit" asp-page-handler="SendVerificationEmail" class="btn-link" style="padding:0px;margin:0px;border:0px">Invia nuovamente email di conferma</button>
                     </p>
                 </div>
             </form>

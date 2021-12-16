@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyCourse.Models.Entities;
-using MyCourse.Models.Entities.Services.Infrastructure;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Lessons;
+using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels.Lessons;
 
 namespace MyCourse.Models.Services.Application.Lessons

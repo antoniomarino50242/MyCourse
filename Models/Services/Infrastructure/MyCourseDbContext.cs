@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using MyCourse.Models.Entities;
 using MyCourse.Models.Enums;
 
-namespace MyCourse.Models.Entities.Services.Infrastructure
+namespace MyCourse.Models.Services.Infrastructure
 {
-    public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
+    public partial class MyCourseDbContext : IdentityDbContext
     {
         public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options): base(options)
         {

@@ -15,12 +15,6 @@ namespace MyCourse.Areas.Identity
         public void Configure(IWebHostBuilder builder)
         {
             builder.ConfigureServices((context, services) => {
-                services.AddDbContext<MyCourseDbContext>(options =>
-                    options.UseSqlite(
-                        context.Configuration.GetConnectionString("MyCourseDbContextConnection")));
-
-                services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                    .AddEntityFrameworkStores<MyCourseDbContext>();
             });
         }
     }
