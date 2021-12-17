@@ -9,7 +9,8 @@ namespace MyCourse.Models.Services.Infrastructure
 {
     public partial class MyCourseDbContext : IdentityDbContext<ApplicationUser>
     {
-        public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options): base(options)
+        public MyCourseDbContext(DbContextOptions<MyCourseDbContext> options)
+            : base(options)
         {
         }
 
@@ -48,6 +49,10 @@ namespace MyCourse.Models.Services.Infrastructure
                 });
 
                 //mapping per le relazioni
+                entity.HasOne(course => course.AuthorUser)
+                    .WithMany(user => user.AuthoredCourses)
+                    .HasForeignKey(course => course.AuthorId);
+
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); // superflua se la prop si chiama courseId

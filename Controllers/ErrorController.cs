@@ -16,10 +16,11 @@ namespace MyCourse.Controllers
                     ViewData["Title"] = "Corso non trovato";
                     Response.StatusCode = 404;
                     return View("CourseNotFound");
-            }
 
-            ViewData["Title"] = "Errore";
-            return View();
+                 default:
+                     ViewData["Title"] = "Errore";
+                     return View();
+            }
         }
     }
 }

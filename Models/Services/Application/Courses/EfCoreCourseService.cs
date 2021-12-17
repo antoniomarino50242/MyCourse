@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
@@ -38,17 +39,19 @@ namespace MyCourse.Models.Services.Application.Courses
         public async Task<CourseDetailViewModel> CreateCourseAsync(CourseCreateInputModel inputModel)
         {
             string title = inputModel.Title;
-            string author = "";
+            string author;
+            string authorId;
             try
             {
                 author = contextAccessor.HttpContext.User.FindFirst("FullName").Value;
+                authorId = contextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             }
             catch (NullReferenceException)
             {
                 throw new UserUnknownException();
             }
 
-            var course = new Course(title, author);
+            var course = new Course(title, author, authorId);
             dbContext.Add(course);
             try
             {

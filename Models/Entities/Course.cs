@@ -7,10 +7,10 @@ namespace MyCourse.Models.Entities
 {
     public partial class Course
     {
-        public Course(string title, string author)
+        public Course(string title, string author, string authorId)
         {
             ChangeTitle(title);
-            ChangeAuthor(author);
+            ChangeAuthor(author, authorId);
             changeStatus(CourseStatus.Draft);
             Lessons = new HashSet<Lesson>();
             CurrentPrice = new Money(Currency.EUR, 0);
@@ -24,7 +24,7 @@ namespace MyCourse.Models.Entities
         public string Title { get; private set; }
         public string Description { get; private set; }
         public string ImagePath { get; private set; }
-        public string Author { get; private set; }
+        public string Author { get;  set; }
         public string Email { get; private set; }
         public double Rating { get; private set; }
         public Money FullPrice { get; private set; }
@@ -32,6 +32,8 @@ namespace MyCourse.Models.Entities
         public virtual ICollection<Lesson> Lessons { get; private set; }
         public string RowVersion { get; private set; }
         public CourseStatus Status { get; private set; }
+        public string AuthorId { get; set; }
+        public virtual ApplicationUser AuthorUser {get; set; }
 
         public void changeStatus(CourseStatus newStatus)
         {
@@ -90,13 +92,18 @@ namespace MyCourse.Models.Entities
             }
             ImagePath = newImagePath;
         }
-        private void ChangeAuthor(string author)
+        private void ChangeAuthor(string newAuthor, string newAuthorId)
         {
-            if (string.IsNullOrWhiteSpace(author))
+            if (string.IsNullOrWhiteSpace(newAuthor))
             {
                 throw new ArgumentException("The Author must have a name");
             }
-            Author = author;
+            if (string.IsNullOrWhiteSpace(newAuthorId))
+            {
+                throw new ArgumentException("The Author must have an id");
+            }
+            Author = newAuthor;
+            AuthorId = newAuthorId;
         }
     }
 }
