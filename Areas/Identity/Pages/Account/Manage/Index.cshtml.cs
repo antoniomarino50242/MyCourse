@@ -36,18 +36,26 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             [Phone(ErrorMessage = "Deve essere un numero di telefono valido")]
             [Display(Name = "Numero di telefono")]
             public string PhoneNumber { get; set; }
+            
+            [Required(ErrorMessage = "Il nome completo è obbligatorio")]
+            [StringLength(100, MinimumLength = 3, ErrorMessage = "Il nome completo deve essere di almeno {2} e di al massimo {1} caratteri.")]
+            [Display(Name = "Nome e cognome")]
+            public string FullName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var utente = await _userManager.FindByEmailAsync(user.Email);
+            var fullName = utente.FullName;
 
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FullName = fullName
             };
         }
 
@@ -80,8 +88,15 @@ namespace MyCourse.Areas.Identity.Pages.Account.Manage
             //TODO: PERSISTERE IL FULLNAME
             //Passo1: Recuperare l'istanza di ApplicationUser (in realtà è stato fatto alla riga 65)
             //Passo2: Modificare la sua proprietà FullName ottenendo il valore dall'input model
+            user.FullName = Input.FullName;
             //Passo3: Persistere l'ApplicationUser invocando il metodo UpdateAsync dello user manager
+            IdentityResult result = await _userManager.UpdateAsync(user);
             //Passo4: Consultare la proprietà Success dell'IdentityResult perché se è false, visualizza un errore
+            if (!result.Succeeded)
+            {
+                StatusMessage = "Si è verificato un errore imprevisto nell'impostare il nuovo nome e cognome";
+                return RedirectToPage();
+            }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
