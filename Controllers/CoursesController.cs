@@ -66,6 +66,10 @@ namespace MyCourse.Controllers
                 {
                     ModelState.AddModelError(nameof(CourseDetailViewModel.Title), "Il titolo inserito è già presente. Prova ad inserirne uno.");
                 }
+                catch (UserUnknownException) 
+                {
+                    ModelState.AddModelError(nameof(CourseDetailViewModel.Title), "Devi esser loggato per creare un corso. Registrati o accedi ad un account esistente!");
+                }
             }
             ViewData["Title"] = "Nuovo corso";
             return View(inputModel);
