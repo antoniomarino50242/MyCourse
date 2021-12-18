@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MyCourse.Models.Exceptions;
+using MyCourse.Models.Exceptions.Application;
 
 namespace MyCourse.Controllers
 {
@@ -17,7 +18,10 @@ namespace MyCourse.Controllers
                     Response.StatusCode = 404;
                     return View("CourseNotFound");
 
-                 default:
+                case UserUnknownException exc:
+                    ViewData["Title"] = "Utente sconosciuto";
+                    return View();
+                default:
                      ViewData["Title"] = "Errore";
                      return View();
             }
