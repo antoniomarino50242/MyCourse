@@ -77,7 +77,14 @@ namespace MyCourse
                         options.Password.RequireUppercase = true;
                         options.Password.RequireNonAlphanumeric = true;
                         options.Password.RequiredUniqueChars = 4;
+
+                        //conferma account
                         options.SignIn.RequireConfirmedAccount = true;
+
+                        //conferma password
+                        options.Lockout.AllowedForNewUsers = true;
+                        options.Lockout.MaxFailedAccessAttempts = 5;
+                        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                     })
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
                     .AddEntityFrameworkStores<MyCourseDbContext>()
