@@ -17,6 +17,7 @@ using MyCourse.Models.Enums;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Entities;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace MyCourse
 {
@@ -76,6 +77,7 @@ namespace MyCourse
                         options.Password.RequireUppercase = true;
                         options.Password.RequireNonAlphanumeric = true;
                         options.Password.RequiredUniqueChars = 4;
+                        options.SignIn.RequireConfirmedAccount = true;
                     })
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
                     .AddEntityFrameworkStores<MyCourseDbContext>()
@@ -94,6 +96,7 @@ namespace MyCourse
             services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
             services.AddTransient<ICachedLessonService, MemoryCachedLessonService>();
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
+            services.AddSingleton<IEmailSender, MailKitEmailSender>();
 
             //options
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
@@ -101,6 +104,7 @@ namespace MyCourse
             services.Configure<TimeOptions>(Configuration.GetSection("Time"));
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<ImageOptions>(Configuration.GetSection("ImageOption"));
+            services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
