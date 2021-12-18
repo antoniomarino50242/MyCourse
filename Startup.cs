@@ -58,19 +58,7 @@ namespace MyCourse
             #endif
             ;
 
-            //Usiamo AdoNet o Entity Framework Core per l'accesso ai dati?
-            var persistence = Persistence.EfCore;
-            switch (persistence)
-            {
-                case Persistence.AdoNet:
-                    services.AddTransient<ICourseService, AdoNetCourseService>();
-                    services.AddTransient<ILessonService, AdoNetLessonService>();
-                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
-                    break;
-
-                case Persistence.EfCore:
-
-                    services.AddDefaultIdentity<ApplicationUser>(options=>{
+            var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options=>{
                         options.Password.RequireDigit = true;
                         options.Password.RequiredLength = 8;
                         options.Password.RequireLowercase = true;
@@ -86,9 +74,24 @@ namespace MyCourse
                         options.Lockout.MaxFailedAccessAttempts = 5;
                         options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                     })
-                    .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>()
-                    .AddEntityFrameworkStores<MyCourseDbContext>()
-                    .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>();
+                    .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
+                    .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
+
+            //Usiamo AdoNet o Entity Framework Core per l'accesso ai dati?
+            var persistence = Persistence.AdoNet;
+            switch (persistence)
+            {
+                case Persistence.AdoNet:
+                    services.AddTransient<ICourseService, AdoNetCourseService>();
+                    services.AddTransient<ILessonService, AdoNetLessonService>();
+                    services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
+
+                    identityBuilder.AddUserStore<AdoNetUserStore>();
+                break;
+
+                case Persistence.EfCore:
+                    
+                    identityBuilder.AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
                     services.AddTransient<ILessonService, EfCoreLessonService>();
@@ -97,7 +100,7 @@ namespace MyCourse
                         string connetionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
                         optionsBuilder.UseSqlite(connetionString);
                     });
-                    break;
+                break;
             }
 
             services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
