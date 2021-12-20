@@ -74,7 +74,7 @@ namespace MyCourse.Models.Services.Application.Courses
             DataSet dataSet = await db.QueryAsync(query);
 
             //Course
-            var courseTable = dataSet.Tables[0];
+            DataTable courseTable = dataSet.Tables[0];
             if (courseTable.Rows.Count != 1)
             {
                 logger.LogWarning("Course {id} not found", id);
@@ -105,8 +105,8 @@ namespace MyCourse.Models.Services.Application.Courses
             FormattableString query = $@"SELECT Id, Title, ImagePath, Author, Rating, FullPrice_Amount, FullPrice_Currency, CurrentPrice_Amount, CurrentPrice_Currency FROM Courses WHERE title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)} ORDER BY {(Sql)orderBy} {(Sql)direction} LIMIT {model.Limit} OFFSET {model.Offset};
             SELECT COUNT(*) FROM Courses WHERE title LIKE {"%" + model.Search + "%"} AND Status<>{nameof(CourseStatus.Deleted)}";
             DataSet dataSet = await db.QueryAsync(query);
-            var dataTable = dataSet.Tables[0];
-            var courseList = new List<CourseViewModel>();
+            DataTable dataTable = dataSet.Tables[0];
+            List<CourseViewModel> courseList = new();
             foreach (DataRow courseRow in dataTable.Rows)
             {
                 CourseViewModel courseViewModel = CourseViewModel.FromDataRow(courseRow);

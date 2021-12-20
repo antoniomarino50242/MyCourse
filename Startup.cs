@@ -52,11 +52,7 @@ namespace MyCourse
                 //model binder personalizzati
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
 
-            })
-            #if DEBUG
-            .AddRazorRuntimeCompilation()
-            #endif
-            ;
+            });
 
             var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options=>{
                         options.Password.RequireDigit = true;
