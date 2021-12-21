@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Ganss.XSS;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MyCourse.Models.Enums;
@@ -25,8 +28,13 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly ILogger<AdoNetCourseService> logger;
         private readonly IImagePersister imagePersister;
-        public AdoNetCourseService(IDatabaseAccessor db, IOptionsMonitor<CoursesOptions> coursesOptions, ILogger<AdoNetCourseService> logger, IImagePersister imagePersister)
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IEmailClient emailClient;
+
+        public AdoNetCourseService(IDatabaseAccessor db, IOptionsMonitor<CoursesOptions> coursesOptions, ILogger<AdoNetCourseService> logger, IImagePersister imagePersister, IHttpContextAccessor httpContextAccessor, IEmailClient emailClient)
         {
+            this.httpContextAccessor = httpContextAccessor;
+            this.emailClient = emailClient;
             this.imagePersister = imagePersister;
             this.logger = logger;
             this.coursesOptions = coursesOptions;
@@ -204,6 +212,54 @@ namespace MyCourse.Models.Services.Application.Courses
             }
 
 
+        }
+
+        public async Task SendQuestionToCourseAuthorAsync(int id, string question)
+        {
+            //Recupero info del corso
+            FormattableString query = $@"SELECT Title, Email FROM Courses WHERE Courses.Id={id}";
+            DataSet dataSet = await db.QueryAsync(query); 
+
+            if (dataSet.Tables[0].Rows.Count == 0)
+            {
+                logger.LogWarning("Course {id} not found", id);
+                throw new CourseNotFoundException(id);
+            }
+
+            string courseTitle = Convert.ToString(dataSet.Tables[0].Rows[0]["Title"]);
+            string courseEmail = Convert.ToString(dataSet.Tables[0].Rows[0]["Email"]);
+
+            //Recupero info utente
+            string userFullName;
+            string userEmail;
+            try
+            {
+                userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
+                userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            }
+            catch (System.Exception)
+            {
+                throw new UserUnknownException();
+            }
+
+            //sanitizzo la domanda dell'utente
+            question = new HtmlSanitizer(allowedTags: new String[0]).Sanitize(question);
+
+            //Compongo il testo della email
+            string subject = $@"Domanda per il corso ""{courseTitle}""";
+            string message = $@"<p> L'utente {userFullName} (<a href=""{userEmail}"">{userEmail}</a>)
+                                ti ha inviato la seguente domanda: </p>
+                                <p>{question}</p>";
+
+            //invio domanda
+            try
+            {
+                await emailClient.SendEmailAsync(courseEmail, userEmail, subject, message);
+            }
+            catch (System.Exception)
+            {
+                throw new SendException();
+            }
         }
     }
 }

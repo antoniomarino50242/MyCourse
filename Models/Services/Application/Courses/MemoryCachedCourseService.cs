@@ -104,5 +104,10 @@ namespace MyCourse.Models.Services.Application.Courses
             await courseService.DeleteCourseAsync(inputModel);
             memoryCache.Remove($"Course{inputModel.Id}");
         }
+
+        public Task SendQuestionToCourseAuthorAsync(int courseId, string question)
+        {
+            return courseService.SendQuestionToCourseAuthorAsync(courseId, question);
+        }
     }
 }

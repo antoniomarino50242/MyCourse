@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Ganss.XSS;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -26,9 +27,13 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IOptionsMonitor<CoursesOptions> coursesOptions;
         private readonly IImagePersister imagePersister;
         private readonly IHttpContextAccessor contextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IEmailClient emailClient;
 
-        public EfCoreCourseService(IHttpContextAccessor contextAccessor, MyCourseDbContext dbContext, ILogger<EfCoreCourseService> logger, IOptionsMonitor<CoursesOptions> coursesOptions, IImagePersister imagePersister)
+        public EfCoreCourseService(IHttpContextAccessor contextAccessor, MyCourseDbContext dbContext, ILogger<EfCoreCourseService> logger, IOptionsMonitor<CoursesOptions> coursesOptions, IImagePersister imagePersister, IHttpContextAccessor httpContextAccessor, IEmailClient emailClient)
         {
+            this.emailClient = emailClient;
+            this.httpContextAccessor = httpContextAccessor;
             this.contextAccessor = contextAccessor;
             this.imagePersister = imagePersister;
             this.coursesOptions = coursesOptions;
@@ -222,7 +227,7 @@ namespace MyCourse.Models.Services.Application.Courses
             }
             return CourseDetailViewModel.FromEntity(course);
         }
-        public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel) 
+        public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
         {
             Course course = await dbContext.Courses.FindAsync(inputModel.Id);
 
@@ -233,6 +238,54 @@ namespace MyCourse.Models.Services.Application.Courses
 
             course.changeStatus(Enums.CourseStatus.Deleted);
             await dbContext.SaveChangesAsync();
+        }
+
+        public async Task SendQuestionToCourseAuthorAsync(int courseId, string question)
+        {
+            //recupero info del corso
+            Course course = await dbContext.Courses.FindAsync(courseId);
+
+            if (course == null)
+            {
+                throw new CourseNotFoundException(courseId);
+            }
+
+            string courseTitle = course.Title;
+            string courseEmail = course.Email;
+
+            //recupero utente
+            string userFullName;
+            string userEmail;
+
+            try
+            {
+                userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
+                userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
+            }
+            catch (NullReferenceException)
+            {
+                throw new UserUnknownException();
+            }
+
+
+            //sanitizzo la domanda dell'utente
+            question = new HtmlSanitizer(allowedTags: new string[0]).Sanitize(question);
+
+            //Compongo il testo della email
+            string subject = $@"Domanda per il corso ""{courseTitle}""";
+            string message = $@"<p> L'utente {userFullName} (<a href=""{userEmail}"">{userEmail}</a>)
+                                ti ha inviato la seguente domanda: </p>
+                                <p>{question}</p>";
+
+            //invio domanda
+            try
+            {
+                await emailClient.SendEmailAsync(courseEmail, userEmail, subject, message);
+            }
+            catch (System.Exception)
+            {
+                throw new SendException();
+            }
         }
     }
 }
