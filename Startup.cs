@@ -18,6 +18,8 @@ using MyCourse.Models.Options;
 using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace MyCourse
 {
@@ -52,6 +54,11 @@ namespace MyCourse
                 //model binder personalizzati
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
 
+                //Configurazione globale dell'Autorizzazione
+                AuthorizationPolicyBuilder policyBuilder = new();
+                AuthorizationPolicy policy = policyBuilder.RequireAuthenticatedUser().Build();
+                AuthorizeFilter filter = new(policy);
+                options.Filters.Add(filter);
             });
 
             var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options=>{
