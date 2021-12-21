@@ -17,7 +17,10 @@ namespace MyCourse.Controllers
                     ViewData["Title"] = "Corso non trovato";
                     Response.StatusCode = 404;
                     return View("CourseNotFound");
-
+                case SendException exc:
+                    ViewData["Title"] = "Non è stato possibile inviare il messaggio, riprova più tardi.";
+                    Response.StatusCode = 500;
+                    return View();
                 case UserUnknownException exc:
                     ViewData["Title"] = "Utente sconosciuto";
                     return View();
