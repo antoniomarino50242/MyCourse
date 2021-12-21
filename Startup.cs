@@ -61,6 +61,12 @@ namespace MyCourse
                 options.Filters.Add(filter);
             });
 
+            services.AddRazorPages(options=> {
+                options.Conventions.AllowAnonymousToPage("/Privacy");
+                options.Conventions.AllowAnonymousToFolder("/Public");
+                options.Conventions.AuthorizeFolder("/Admin");
+            });
+
             var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options=>{
                         options.Password.RequireDigit = true;
                         options.Password.RequiredLength = 8;
