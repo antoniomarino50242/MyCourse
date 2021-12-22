@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.ViewModels.Courses;
+using AspNetCore.ReCaptcha;
+
 
 namespace MyCourse.Pages
 {
+    [ValidateReCaptcha]
     public class ContactModel : PageModel
     {
         public CourseDetailViewModel Course { get; private set;}
