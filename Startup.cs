@@ -127,6 +127,7 @@ namespace MyCourse
             services.Configure<MemoryCacheOptions>(Configuration.GetSection("MemoryCache"));
             services.Configure<ImageOptions>(Configuration.GetSection("ImageOption"));
             services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
+            services.Configure<UsersOptions>(Configuration.GetSection("Users"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
