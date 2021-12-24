@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Courses;
@@ -10,6 +11,7 @@ using MyCourse.Models.ViewModels.Courses;
 
 namespace MyCourse.Controllers
 {
+    [Authorize(Roles = nameof(Role.Teacher))]
     public class CoursesController : Controller
     {
         private readonly ICourseService courseService;
@@ -17,6 +19,7 @@ namespace MyCourse.Controllers
         {
             this.courseService = courseService;
         }
+
         [AllowAnonymous]
         public async Task<IActionResult> Index(CourseListInputModel input)
         {
@@ -37,6 +40,7 @@ namespace MyCourse.Controllers
             return Json(result);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Detail(int id)
         {
             CourseDetailViewModel viewModel = await courseService.GetCourseAsync(id);
