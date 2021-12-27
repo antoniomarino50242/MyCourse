@@ -21,5 +21,6 @@ namespace MyCourse.Models.Services.Application.Courses
         Task DeleteCourseAsync(CourseDeleteInputModel inputModel);
         Task SendQuestionToCourseAuthorAsync(int courseId, string question);
         Task<string> GetCourseAuthorIdAsync(int courseId);
+        Task<int> GetCourseCountByAuthorIdAsync(string userId);
     }
 }

@@ -59,5 +59,6 @@ namespace MyCourse.Models.Services.Infrastructure
                 logger.LogError(exc, "Couldn't send email to {email} with message {message}", recipientEmail, htmlMessage);
             }
         }
+
     }
 }

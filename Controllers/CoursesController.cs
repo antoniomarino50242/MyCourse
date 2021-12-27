@@ -1,11 +1,14 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using MyCourse.Models.Enums;
 using MyCourse.Models.Exceptions;
 using MyCourse.Models.Exceptions.Application;
 using MyCourse.Models.InputModels.Courses;
+using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
+using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 
@@ -57,7 +60,7 @@ namespace MyCourse.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel) 
+        public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel, [FromServices] IAuthorizationService authorizationService, [FromServices] IEmailClient emailClient, [FromServices] IOptionsMonitor<UsersOptions> usersOptions) 
         {
             if (ModelState.IsValid)
             {
@@ -65,6 +68,13 @@ namespace MyCourse.Controllers
                 {
                     //Viene coinvolto il servizio applicativo in modo che il corso venga creato
                     CourseDetailViewModel course = await courseService.CreateCourseAsync(inputModel);
+
+                    AuthorizationResult result = await authorizationService.AuthorizeAsync(User, nameof(Policy.CourseLimit));
+                    if (!result.Succeeded)
+                    {
+                        await emailClient.SendEmailAsync(usersOptions.CurrentValue.NotificationEmailRecipient, "Avviso superamento soglia", $"Il docente {User.Identity.Name} ha molti corsi: verifica che riesca a gestirli tutti.");
+                    }
+
                     TempData["ConfirmationMessage"] = "Corso creato con successo! Inserisci ora il resto delle informazioni.";
                     return RedirectToAction(nameof(Edit), new{ id = course.Id});
                 }

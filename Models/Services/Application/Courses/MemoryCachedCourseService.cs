@@ -118,5 +118,14 @@ namespace MyCourse.Models.Services.Application.Courses
                 return courseService.GetCourseAuthorIdAsync(courseId);
             });
         }
+
+        public Task<int> GetCourseCountByAuthorIdAsync(string authorId)
+        {
+            return memoryCache.GetOrCreateAsync($"CourseCountByAuthorId{authorId}", cacheEntry => 
+            {
+                cacheEntry.SetAbsoluteExpiration(TimeSpan.FromSeconds(timeOptions.CurrentValue.Default)); //Esercizio: provate a recuperare il valore 60 usando il servizio di configurazione
+                return courseService.GetCourseCountByAuthorIdAsync(authorId);
+            });
+        }
     }
 }
