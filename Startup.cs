@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AspNetCore.ReCaptcha;
+using MyCourse.Models.Authorization;
 
 namespace MyCourse
 {
@@ -55,12 +56,6 @@ namespace MyCourse
 
                 //model binder personalizzati
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
-
-                //Configurazione globale dell'Autorizzazione
-                AuthorizationPolicyBuilder policyBuilder = new();
-                AuthorizationPolicy policy = policyBuilder.RequireAuthenticatedUser().Build();
-                AuthorizeFilter filter = new(policy);
-                options.Filters.Add(filter);
             });
 
             services.AddRazorPages(options=> {
@@ -120,6 +115,18 @@ namespace MyCourse
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
 
+            // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
+            // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped
+            services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
+
+            //Policies
+            services.AddAuthorization( options=> {
+                options.AddPolicy("CourseAuthor", builder => 
+                {
+                    builder.Requirements.Add(new CourseAuthorRequirement());
+                });
+            });
+
             //options
             services.Configure<ConnectionStringOptions>(Configuration.GetSection("ConnectionStrings"));
             services.Configure<CoursesOptions>(Configuration.GetSection("Courses"));
@@ -177,8 +184,8 @@ namespace MyCourse
             //Endpoint middleware
             app.UseEndpoints(routeBuilder =>
             {
-                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                routeBuilder.MapRazorPages();
+                routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}").RequireAuthorization();
+                routeBuilder.MapRazorPages().RequireAuthorization();
             });
         }
     }

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using MyCourse.Models.Authorization;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
@@ -18,5 +20,6 @@ namespace MyCourse.Models.Services.Application.Courses
         Task<CourseDetailViewModel> EditCourseAsync(CourseEditInputModel inputModel);
         Task DeleteCourseAsync(CourseDeleteInputModel inputModel);
         Task SendQuestionToCourseAuthorAsync(int courseId, string question);
+        Task<string> GetCourseAuthorIdAsync(int courseId);
     }
 }
