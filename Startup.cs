@@ -114,10 +114,13 @@ namespace MyCourse
             services.AddSingleton<IImagePersister, MagickNetImagePersister>();
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
+            services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
 
             // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
             // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped
             services.AddScoped<IAuthorizationHandler, CourseAuthorRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, CourseLimitRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler, CourseSubscriberRequirementHandler>();
 
             //Policies
             services.AddAuthorization( options=> {
@@ -128,6 +131,11 @@ namespace MyCourse
 
                 options.AddPolicy(nameof(Policy.CourseLimit), builder => {
                     builder.Requirements.Add(new CourseLimitRequirement(limit : 5));
+                });
+
+                options.AddPolicy(nameof(Policy.CourseSubscriber), builder =>
+                {
+                    builder.Requirements.Add(new CourseSubscriberRequirement());
                 });
             });
 

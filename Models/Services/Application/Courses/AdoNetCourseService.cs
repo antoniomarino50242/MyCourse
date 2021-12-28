@@ -122,7 +122,7 @@ namespace MyCourse.Models.Services.Application.Courses
                 courseList.Add(courseViewModel);
             }
 
-            ListViewModel<CourseViewModel> result = new ListViewModel<CourseViewModel>
+            ListViewModel<CourseViewModel> result = new()
             {
                 Results = courseList,
                 TotalCount = Convert.ToInt32(dataSet.Tables[1].Rows[0][0])
@@ -204,7 +204,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public async Task DeleteCourseAsync(CourseDeleteInputModel inputModel)
         {
-            int affectedRows = await this.db.CommandAsync($"UPDATE Courses SET Status={nameof(CourseStatus.Deleted)} WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)}");
+            int affectedRows = await db.CommandAsync($"UPDATE Courses SET Status={nameof(CourseStatus.Deleted)} WHERE Id={inputModel.Id} AND Status<>{nameof(CourseStatus.Deleted)}");
 
             if (affectedRows == 0)
             {
@@ -237,7 +237,7 @@ namespace MyCourse.Models.Services.Application.Courses
                 userFullName = httpContextAccessor.HttpContext.User.FindFirst("FullName").Value;
                 userEmail = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Email).Value;
             }
-            catch (System.Exception)
+            catch
             {
                 throw new UserUnknownException();
             }
@@ -283,6 +283,11 @@ namespace MyCourse.Models.Services.Application.Courses
                 
                 throw new CourseSubscribeException(inputModel.CourseId);
             }
+        }
+
+        public Task<bool> IsCourseSubscribedAsync(int courseId, string userId)
+        {
+            return db.QueryScalarAsync<bool>($"SELECT COUNT(*) FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
         }
     }
 }

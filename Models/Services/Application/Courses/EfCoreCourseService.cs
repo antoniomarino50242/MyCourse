@@ -323,5 +323,10 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new CourseSubscribeException(inputModel.CourseId);
             }
         }
+
+        public Task<bool> IsCourseSubscribedAsync(int courseId, string userId)
+        {
+            return dbContext.Subscriptions.Where(subscription => subscription.CourseId == courseId && subscription.UserId == userId).AnyAsync();
+        }
     }
 }
