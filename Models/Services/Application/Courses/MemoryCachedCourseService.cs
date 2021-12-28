@@ -127,5 +127,10 @@ namespace MyCourse.Models.Services.Application.Courses
                 return courseService.GetCourseCountByAuthorIdAsync(authorId);
             });
         }
+
+        public Task SubscribeCourseAsync(CourseSubscribeInputModel inputModel)
+        {
+            return courseService.SubscribeCourseAsync(inputModel);
+        }
     }
 }

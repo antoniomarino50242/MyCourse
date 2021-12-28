@@ -1,3 +1,5 @@
+using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +11,12 @@ using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.Services.Infrastructure;
+using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
 
 namespace MyCourse.Controllers
 {
-    [Authorize(Roles = nameof(Role.Teacher))]
     public class CoursesController : Controller
     {
         private readonly ICourseService courseService;
@@ -51,6 +53,7 @@ namespace MyCourse.Controllers
             return View(viewModel);
         }
 
+        [Authorize(Roles = nameof(Role.Teacher))]
         public IActionResult Create()
         {
             //Viene mostrato il form all'utente
@@ -60,6 +63,7 @@ namespace MyCourse.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = nameof(Role.Teacher))]
         public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel, [FromServices] IAuthorizationService authorizationService, [FromServices] IEmailClient emailClient, [FromServices] IOptionsMonitor<UsersOptions> usersOptions) 
         {
             if (ModelState.IsValid)
@@ -92,6 +96,7 @@ namespace MyCourse.Controllers
         }
 
         [Authorize(Policy = nameof(Policy.CourseAuthor))]
+        [Authorize(Roles = nameof(Role.Teacher))]
         public async Task<IActionResult> Edit(int id)
         {
             ViewData["Title"] = "Modifica corso";
@@ -101,6 +106,7 @@ namespace MyCourse.Controllers
 
         [HttpPost]
         [Authorize(Policy = nameof(Policy.CourseAuthor))]
+        [Authorize(Roles = nameof(Role.Teacher))]
         public async Task<IActionResult> Edit(CourseEditInputModel inputModel)
         {
             if (ModelState.IsValid)
@@ -131,11 +137,30 @@ namespace MyCourse.Controllers
 
         [HttpPost]
         [Authorize(Policy = nameof(Policy.CourseAuthor))]
+        [Authorize(Roles = nameof(Role.Teacher))]
         public async Task<IActionResult> Delete(CourseDeleteInputModel inputModel)
         {
             await courseService.DeleteCourseAsync(inputModel);
             TempData["ConfirmationMessage"] = "Il corso è stato eliminato correttamente, ma potrebbe continuare a comparire negli elenchi per un breve periodo, finchè la cache non viene aggiornata.";
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Subscribe(int id)
+        {
+            //TODO pagamento
+            CourseSubscribeInputModel inputModel = new()
+            {
+                CourseId = id,
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                TransactionId = string.Empty,
+                PaymentType = string.Empty,
+                Paid = new Money(Currency.EUR, 0m),
+                PaymentDate = DateTime.UtcNow
+            };
+
+            await courseService.SubscribeCourseAsync(inputModel);
+            TempData["ConfirmationMessage"] = "Grazie per esserti iscritto, guarda subito la prima lezione!";
+            return RedirectToAction(nameof(Detail), new {id = id});
         }
     }
 }

@@ -271,5 +271,18 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             return db.QueryScalarAsync<int>($"SELECT COUNT(*) FROM Courses WHERE AuthorId={authorId}");
         }
+
+        public async Task SubscribeCourseAsync(CourseSubscribeInputModel inputModel)
+        {
+            try
+            {
+                await db.CommandAsync($"INSERT INTO Subscriptions (UserId, CourseId, PaymentDate, PaymentType, Paid_Amount, Paid_Currency, TransactionId) VALUES ({inputModel.UserId}, {inputModel.CourseId}, {inputModel.PaymentDate}, {inputModel.PaymentType}, {inputModel.Paid.Amount}, {inputModel.Paid.Currency}, {inputModel.TransactionId})");
+            }
+            catch (ConstraintViolationException)
+            {
+                
+                throw new CourseSubscribeException(inputModel.CourseId);
+            }
+        }
     }
 }
