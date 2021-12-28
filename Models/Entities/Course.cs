@@ -34,6 +34,7 @@ namespace MyCourse.Models.Entities
         public CourseStatus Status { get; private set; }
         public string AuthorId { get; set; }
         public virtual ApplicationUser AuthorUser {get; set; }
+        public virtual ICollection<ApplicationUser> SubscribedUsers { get; private set; }
 
         public void changeStatus(CourseStatus newStatus)
         {

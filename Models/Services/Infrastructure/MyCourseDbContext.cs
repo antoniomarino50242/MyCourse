@@ -56,7 +56,24 @@ namespace MyCourse.Models.Services.Infrastructure
                 entity.HasMany(course => course.Lessons)
                       .WithOne(lesson => lesson.Course)
                       .HasForeignKey(lesson => lesson.CourseId); // superflua se la prop si chiama courseId
-
+                
+                entity.HasMany(course => course.SubscribedUsers)
+                      .WithMany(user => user.SubscribedCourses)
+                      .UsingEntity<Subscription>(
+                          entity => entity.HasOne(subscription => subscription.User).WithMany().HasForeignKey(courseStudent => courseStudent.UserId),
+                          entity => entity.HasOne(subscription => subscription.Course).WithMany().HasForeignKey(courseStudent => courseStudent.CourseId),
+                          entity => 
+                            {
+                            entity.ToTable("Subscriptions");
+                            entity.OwnsOne(subscription => subscription.Paid, builder => 
+                                {
+                                    builder.Property(money => money.Currency)
+                                           .HasConversion<string>();
+                                    builder.Property(money => money.Amount)
+                                            .HasConversion<float>();
+                                });
+                            }
+                        );                          
                 //Global Query Filter
                 entity.HasQueryFilter(course => course.Status != CourseStatus.Deleted);
 
