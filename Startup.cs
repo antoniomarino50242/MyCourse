@@ -18,7 +18,6 @@ using MyCourse.Models.Services.Infrastructure;
 using MyCourse.Models.Entities;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using AspNetCore.ReCaptcha;
 using MyCourse.Models.Authorization;
 
@@ -150,6 +149,7 @@ namespace MyCourse
             services.Configure<SmtpOptions>(Configuration.GetSection("Smtp"));
             services.Configure<UsersOptions>(Configuration.GetSection("Users"));
             services.Configure<PaypalOptions>(Configuration.GetSection("Paypal"));
+            services.Configure<StripeOptions>(Configuration.GetSection("Stripe"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Enums;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using PayPalCheckoutSdk.Core;
@@ -70,11 +71,34 @@ namespace MyCourse.Models.Services.Infrastructure
                                        new LiveEnvironment(clientId, clientSecret);
         }
 
-        public Task<CourseSubscribeInputModel> CapturePaymentAsync(string token)
+        public async Task<CourseSubscribeInputModel> CapturePaymentAsync(string token)
         {
-            throw new NotImplementedException();
-        }
+            PayPalEnvironment env = GetPayPalEnvironment(options.CurrentValue);
+            PayPalHttpClient client = new PayPalHttpClient(env);
 
-        
+            OrdersCaptureRequest request = new(token);
+            request.RequestBody(new OrderActionRequest());
+            request.Prefer("return=representation");
+
+            HttpResponse response = await client.Execute(request);
+            Order result = response.Result<Order>();
+
+            PurchaseUnit purchaseUnit = result.PurchaseUnits.First();
+            Capture capture = purchaseUnit.Payments.Captures.First();
+            
+            String[] customIdParts = purchaseUnit.CustomId.Split('/');
+            int courseId = int.Parse(customIdParts[0]);
+            string userId = customIdParts[1];
+
+            return new CourseSubscribeInputModel
+            {
+                CourseId = courseId,
+                UserId = userId,
+                Paid = new(Enum.Parse<Currency>(capture.Amount.CurrencyCode), decimal.Parse(capture.Amount.Value, CultureInfo.InvariantCulture)),
+                TransactionId = capture.Id,
+                PaymentDate = DateTime.Parse(capture.CreateTime, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal),
+                PaymentType = "Paypal"
+            };
+        }
     }
 }

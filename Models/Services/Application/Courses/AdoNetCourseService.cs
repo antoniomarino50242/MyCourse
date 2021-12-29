@@ -306,7 +306,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public Task<CourseSubscribeInputModel> CapturePaymentAsync(int id, string token)
         {
-            throw new NotImplementedException();
+            return paymentGateway.CapturePaymentAsync(token);
         }
 
         public async Task<string> GetPaymentUrlAsync(int courseId)

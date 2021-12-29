@@ -26,5 +26,6 @@
     <PackageReference Include="MailKit" Version="3.0.0" />
     <PackageReference Include="PayPalCheckoutSdk" Version="1.0.4" />
     <PackageReference Include="PayPalHttp" Version="1.0.1" />
+    <PackageReference Include="Stripe.net" Version="39.84.0" />
   </ItemGroup>
 </Project>
