@@ -113,10 +113,11 @@ namespace MyCourse
             services.AddSingleton<IEmailSender, MailKitEmailSender>();
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
+            services.AddSingleton<ITransactionLogger, LocalTransactionLogger>();
 
             //Servizi di pagamento
-            services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
-            //services.AddTransient<IPaymentGateway, StripePaymentGateway>();
+            //services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
+            services.AddTransient<IPaymentGateway, StripePaymentGateway>();
 
             // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
             // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped

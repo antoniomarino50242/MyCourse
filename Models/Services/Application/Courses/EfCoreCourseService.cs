@@ -34,6 +34,7 @@ namespace MyCourse.Models.Services.Application.Courses
         private readonly IEmailClient emailClient;
         private readonly LinkGenerator linkGenerator;
         private readonly IPaymentGateway paymentGateway;
+        private readonly ITransactionLogger transactionLogger;
 
         public EfCoreCourseService(IHttpContextAccessor contextAccessor,
          MyCourseDbContext dbContext, 
@@ -43,11 +44,13 @@ namespace MyCourse.Models.Services.Application.Courses
          IHttpContextAccessor httpContextAccessor, 
          IEmailClient emailClient,
          LinkGenerator linkGenerator,
-         IPaymentGateway paymentGateway)
+         IPaymentGateway paymentGateway,
+         ITransactionLogger transactionLogger)
         {
             this.emailClient = emailClient;
             this.linkGenerator = linkGenerator;
             this.paymentGateway = paymentGateway;
+            this.transactionLogger = transactionLogger;
             this.httpContextAccessor = httpContextAccessor;
             this.contextAccessor = contextAccessor;
             this.imagePersister = imagePersister;
@@ -336,6 +339,10 @@ namespace MyCourse.Models.Services.Application.Courses
             catch (DbUpdateException)
             {
                 throw new CourseSubscriptionException(inputModel.CourseId);
+            }
+            catch (Exception)
+            {
+                await transactionLogger.LogTransactionAsync(inputModel);
             }
         }
 
