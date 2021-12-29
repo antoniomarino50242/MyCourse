@@ -290,12 +290,11 @@ namespace MyCourse.Models.Services.Application.Courses
         {
             try
             {
-                await db.CommandAsync($"INSERT INTO Subscriptions (UserId, CourseId, PaymentDate, PaymentType, Paid_Amount, Paid_Currency, TransactionId) VALUES ({inputModel.UserId}, {inputModel.CourseId}, {inputModel.PaymentDate}, {inputModel.PaymentType}, {inputModel.Paid.Amount}, {inputModel.Paid.Currency}, {inputModel.TransactionId})");
+                await db.CommandAsync($"INSERT INTO Subscriptions (UserId, CourseId, PaymentDate, PaymentType, Paid_Currency, Paid_Amount, TransactionId) VALUES ({inputModel.UserId}, {inputModel.CourseId}, {inputModel.PaymentDate}, {inputModel.PaymentType}, {inputModel.Paid.Currency.ToString()}, {inputModel.Paid.Amount}, {inputModel.TransactionId})");
             }
             catch (ConstraintViolationException)
             {
-                
-                throw new CourseSubscribeException(inputModel.CourseId);
+                throw new CourseSubscriptionException(inputModel.CourseId);
             }
         }
 

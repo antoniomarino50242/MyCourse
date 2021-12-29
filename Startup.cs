@@ -115,8 +115,8 @@ namespace MyCourse
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
 
             //Servizi di pagamento
-            //services.AddScoped<IPaymentGateway, PaypalPaymentGateway>();
-            services.AddScoped<IPaymentGateway, StripePaymentGateway>();
+            services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
+            //services.AddTransient<IPaymentGateway, StripePaymentGateway>();
 
             // Uso il ciclo di vita Scoped per registrare questi AuthorizationHandler perché
             // sfruttano un servizio (il DbContext) registrato con il ciclo di vita Scoped

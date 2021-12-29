@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace MyCourse.Models.Exceptions.Application
 {
-    public class CourseSubscribeException : Exception
+    public class CourseSubscriptionException : Exception
     {
-        public CourseSubscribeException(int courseId) : base($"Couldn't subscribe to course {courseId}")
+        public CourseSubscriptionException(int courseId) : base($"Couldn't subscribe to course {courseId}")
         {
         }
     }

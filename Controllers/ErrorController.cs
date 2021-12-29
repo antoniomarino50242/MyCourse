@@ -21,7 +21,7 @@ namespace MyCourse.Controllers
                     ViewData["Title"] = "Non è stato possibile inviare il messaggio, riprova più tardi.";
                     Response.StatusCode = 500;
                     return View();
-                case CourseSubscribeException exc:
+                case CourseSubscriptionException exc:
                     ViewData["Title"] = "Non è stato possibile iscriverti al corso, riprova più tardi.";
                     Response.StatusCode = 400;
                     return View();

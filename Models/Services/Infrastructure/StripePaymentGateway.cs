@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using MyCourse.Models.Enums;
+using MyCourse.Models.Exceptions.Infrastructure;
 using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using Stripe;
@@ -18,7 +20,7 @@ namespace MyCourse.Models.Services.Infrastructure
         {
             this.options = options;
         }
-        
+
         public async Task<string> GetPaymentUrlAsync(CoursePayInputModel inputModel)
         {
             SessionCreateOptions sessionCreateOptions = new()
@@ -57,9 +59,39 @@ namespace MyCourse.Models.Services.Infrastructure
             return session.Url;
         }
 
-        public Task<CourseSubscribeInputModel> CapturePaymentAsync(string token)
+        public async Task<CourseSubscribeInputModel> CapturePaymentAsync(string token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                RequestOptions requestOptions = new()
+                {
+                    ApiKey = options.CurrentValue.PrivateKey
+                };
+
+                SessionService sessionService = new();
+                Session session = await sessionService.GetAsync(token, requestOptions: requestOptions);
+
+                PaymentIntentService paymentIntentService = new();
+                PaymentIntent paymentIntent = await paymentIntentService.CaptureAsync(session.PaymentIntentId, requestOptions: requestOptions);
+
+                String[] customIdPart = session.ClientReferenceId.Split('/');
+                int courseId = int.Parse(customIdPart[0]);
+                string userId = customIdPart[1];
+
+                return new CourseSubscribeInputModel
+                {
+                    CourseId = courseId,
+                    UserId = userId,
+                    Paid = new(Enum.Parse<Currency>(paymentIntent.Currency, ignoreCase: true), paymentIntent.Amount / 100m),
+                    TransactionId = paymentIntent.Id,
+                    PaymentDate = paymentIntent.Created,
+                    PaymentType = "Stripe"
+                };
+            }
+            catch (Exception exc)
+            {
+                throw new PaymentGatewayException(exc);
+            }        
         }
     }
 }
