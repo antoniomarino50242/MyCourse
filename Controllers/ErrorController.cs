@@ -25,6 +25,10 @@ namespace MyCourse.Controllers
                     ViewData["Title"] = "Non è stato possibile iscriverti al corso, riprova più tardi.";
                     Response.StatusCode = 400;
                     return View();
+                case CourseSubscriptionNotFoundException exc:
+                    ViewData["Title"] = "Non sei iscritto al corso.";
+                    Response.StatusCode = 400;
+                    return View();
                 case UserUnknownException exc:
                     ViewData["Title"] = "Utente sconosciuto";
                     return View();

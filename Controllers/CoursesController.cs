@@ -158,5 +158,27 @@ namespace MyCourse.Controllers
             string paymentUrl = await courseService.GetPaymentUrlAsync(id);
             return Redirect(paymentUrl);
         }
+
+        [Authorize(Policy = nameof(Policy.CourseSubscriber))]
+        public async Task<IActionResult> VoteAsync(int id) 
+        {
+            CourseVoteInputModel inputModel = new()
+            {
+                Id = id,
+                Vote = await courseService.GetCourseVoteAsync(id) ?? 0
+            };
+            return View(inputModel);
+        }
+
+        [Authorize(Policy = nameof(Policy.CourseSubscriber))]
+        [HttpPost]
+        public async Task<IActionResult> VoteAsync(CourseVoteInputModel inputModel) 
+        {
+            await courseService.VoteCourseAsync(inputModel);
+            TempData["ConfirmationMessage"] = "Grazie per aver votato!";
+            return RedirectToAction(nameof(Detail), new {id = inputModel.Id});
+        }
+
+
     }
 }

@@ -335,5 +335,27 @@ namespace MyCourse.Models.Services.Application.Courses
             };
             return await paymentGateway.GetPaymentUrlAsync(inputModel);
         }
+
+        public async Task<int?> GetCourseVoteAsync(int courseId)
+        {
+            string userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string vote = await db.QueryScalarAsync<string>($"SELECT Vote FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
+            return string.IsNullOrEmpty(vote) ? null : Convert.ToInt32(vote);
+        }
+
+        public async Task VoteCourseAsync(CourseVoteInputModel inputModel)
+        {
+            if (inputModel.Vote < 1 || inputModel.Vote > 5)
+            {
+                throw new InvalidVoteException(inputModel.Vote);
+            }
+            
+            string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            int updatedRows = await db.CommandAsync($"UPDATE Subscriptions SET Vote={inputModel.Vote} WHERE CourseId={inputModel.Id} AND UserId={userId}");
+            if (updatedRows == 0)
+            {
+                throw new CourseSubscriptionNotFoundException(inputModel.Id);
+            }
+        }
     }
 }
