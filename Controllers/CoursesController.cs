@@ -64,7 +64,7 @@ namespace MyCourse.Controllers
 
         [HttpPost]
         [Authorize(Roles = nameof(Role.Teacher))]
-        public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel, [FromServices] IAuthorizationService authorizationService, [FromServices] IEmailClient emailClient, [FromServices] IOptionsMonitor<UsersOptions> usersOptions) 
+        public async Task<IActionResult> CreateAsync(CourseCreateInputModel inputModel, [FromServices] IAuthorizationService authorizationService, [FromServices] IEmailClient emailClient, [FromServices] IOptionsMonitor<UsersOptions> usersOptions)
         {
             if (ModelState.IsValid)
             {
@@ -80,13 +80,13 @@ namespace MyCourse.Controllers
                     }
 
                     TempData["ConfirmationMessage"] = "Corso creato con successo! Inserisci ora il resto delle informazioni.";
-                    return RedirectToAction(nameof(Edit), new{ id = course.Id});
+                    return RedirectToAction(nameof(Edit), new { id = course.Id });
                 }
                 catch (CourseTitleUnavailableException)
                 {
                     ModelState.AddModelError(nameof(CourseDetailViewModel.Title), "Il titolo inserito è già presente. Prova ad inserirne uno.");
                 }
-                catch (UserUnknownException) 
+                catch (UserUnknownException)
                 {
                     ModelState.AddModelError(nameof(CourseDetailViewModel.Title), "Devi esser loggato per creare un corso. Registrati o accedi ad un account esistente!");
                 }
@@ -116,7 +116,7 @@ namespace MyCourse.Controllers
                 {
                     CourseDetailViewModel course = await courseService.EditCourseAsync(inputModel);
                     TempData["ConfirmationMessage"] = "Dati modificati con successo!";
-                    return RedirectToAction(nameof(Detail), new {id = inputModel.Id});
+                    return RedirectToAction(nameof(Detail), new { id = inputModel.Id });
                 }
                 catch (CourseTitleUnavailableException)
                 {
@@ -126,9 +126,9 @@ namespace MyCourse.Controllers
                 {
                     ModelState.AddModelError(nameof(CourseEditInputModel.Image), "L'immagine selezionata non è valida! ");
                 }
-                catch(OptimisticConcurrencyException)
+                catch (OptimisticConcurrencyException)
                 {
-                    ModelState.AddModelError("","Spiacenti il salvataggio non è andato a buon fine perchè nel frattempo un altro utente ha aggiornato il corso. Ti preghiamo di aggiornare la pagina e attuare le modifiche.");
+                    ModelState.AddModelError("", "Spiacenti il salvataggio non è andato a buon fine perchè nel frattempo un altro utente ha aggiornato il corso. Ti preghiamo di aggiornare la pagina e attuare le modifiche.");
                 }
             }
             ViewData["Title"] = "Modifica corso";
@@ -145,22 +145,18 @@ namespace MyCourse.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Subscribe(int id)
+        public async Task<IActionResult> Subscribe(int id, string token)
         {
-            //TODO pagamento
-            CourseSubscribeInputModel inputModel = new()
-            {
-                CourseId = id,
-                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
-                TransactionId = string.Empty,
-                PaymentType = string.Empty,
-                Paid = new Money(Currency.EUR, 0m),
-                PaymentDate = DateTime.UtcNow
-            };
-
+            CourseSubscribeInputModel inputModel = await courseService.CapturePaymentAsync(id, token);
             await courseService.SubscribeCourseAsync(inputModel);
             TempData["ConfirmationMessage"] = "Grazie per esserti iscritto, guarda subito la prima lezione!";
-            return RedirectToAction(nameof(Detail), new {id = id});
+            return RedirectToAction(nameof(Detail), new { id = id });
+        }
+
+        public async Task<IActionResult> Pay(int id)
+        {
+            string paymentUrl = await courseService.GetPaymentUrlAsync(id);
+            return Redirect(paymentUrl);
         }
     }
 }

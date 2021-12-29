@@ -28,8 +28,6 @@ namespace MyCourse.Models.Services.Application.Courses
             return courseService.CreateCourseAsync(inputModel);
         }
 
-
-
         public Task<List<CourseViewModel>> GetBestRatingCoursesAsync()
         {
             return memoryCache.GetOrCreateAsync($"BestRatingCourses", cacheEntry =>
@@ -48,9 +46,7 @@ namespace MyCourse.Models.Services.Application.Courses
                 return courseService.GetCourseAsync(id);
             });
         }
-
-
-
+        
         public Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
             //Metto in cache i risultati solo per le prime 5 pagine del catalogo, che reputo essere
@@ -136,6 +132,16 @@ namespace MyCourse.Models.Services.Application.Courses
         public Task<bool> IsCourseSubscribedAsync(int courseId, string userId)
         {
             return courseService.IsCourseSubscribedAsync(courseId, userId);
+        }
+
+        public Task<CourseSubscribeInputModel> CapturePaymentAsync(int id, string token)
+        {
+            return courseService.CapturePaymentAsync(id,token);
+        }
+
+        public Task<string> GetPaymentUrlAsync(int id)
+        {
+            return courseService.GetPaymentUrlAsync(id);
         }
     }
 }
