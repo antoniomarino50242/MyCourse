@@ -21,8 +21,9 @@ namespace MyCourse.Models.Services.Infrastructure
         public MagickNetImagePersister(IWebHostEnvironment env, IOptionsMonitor<ImageOptions> imageOption)
         {
             this.imageOptions = imageOption;
-            ResourceLimits.Height = 4000;
-            ResourceLimits.Width = 4000;
+            //Eccezione generata con .net6 arm
+            //ResourceLimits.Height = 4000;
+            //ResourceLimits.Width = 4000;  
             semaphore = new SemaphoreSlim(2);
             this.env = env;
         }

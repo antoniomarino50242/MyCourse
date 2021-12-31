@@ -14,6 +14,7 @@ namespace MyCourse.Pages
     {
         public CourseDetailViewModel Course { get; private set;}
 
+        [Display(Name = "Digita qui il tuo testo")]
         [Required(ErrorMessage = "Il testo della domanda è obbligatorio.")]
         [BindProperty]
         public string Question { get; set; }
