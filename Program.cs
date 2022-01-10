@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +14,8 @@ namespace MyCourse
 {
     public class Program
     {
-        public static void Main(string[] args)
+        //---CONFIGURAZIONE CON .NET5 o precedenti
+        /*public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
         }
@@ -28,6 +30,24 @@ namespace MyCourse
                 webHostBuilder.UseStartup<Startup>();
             });
             //se volessi configurare la dependency injection in un'applicazione console userei: 
-            //.ConfigureServices            
+            //.ConfigureServices 
+            */      
+
+        //---CONFIGURAZIONE CON .NET6 CON MINIMAL HOSTING MODEL
+        public static void Main(string[] args)
+        {
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+            Startup startup = new(builder.Configuration);
+
+            //aggiunger i servizi per la dependency injection (metodo ConfigureServices)
+            startup.ConfigureServices(builder.Services);
+
+            WebApplication app = builder.Build();
+
+            //usiamo i middleware (metodo Configure)
+            startup.Configure(app);
+
+            app.Run();
+        }     
     }
 }

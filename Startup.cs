@@ -155,12 +155,16 @@ namespace MyCourse
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHostApplicationLifetime lifetime)
+        public void Configure(WebApplication app)
         {
+            IWebHostEnvironment env = app.Environment;
+            IHostApplicationLifetime lifetime = app.Lifetime;
+
             //if (env.IsDevelopment())
             if (env.IsEnvironment("Development"))
             {
-                app.UseDeveloperExceptionPage();
+                //Aggiunta automaticamente con .Net6
+                //app.UseDeveloperExceptionPage();
 
                 //Aggiorniamo un file per notificare al BrowserSync che deve aggiornare la pagina
                 lifetime.ApplicationStarted.Register(() =>
@@ -199,11 +203,14 @@ namespace MyCourse
             });*/
 
             //Endpoint middleware
-            app.UseEndpoints(routeBuilder =>
+            app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}").RequireAuthorization();
+            app.MapRazorPages().RequireAuthorization();
+            /*app.UseEndpoints(routeBuilder =>
             {
                 routeBuilder.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}").RequireAuthorization();
                 routeBuilder.MapRazorPages().RequireAuthorization();
             });
+            */
         }
     }
 }
