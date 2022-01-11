@@ -27,5 +27,6 @@
     <PackageReference Include="PayPalCheckoutSdk" Version="1.0.4" />
     <PackageReference Include="PayPalHttp" Version="1.0.1" />
     <PackageReference Include="Stripe.net" Version="39.84.0" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.15" />
   </ItemGroup>
 </Project>

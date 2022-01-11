@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Ganss.XSS;
@@ -128,7 +129,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public async Task<ListViewModel<CourseViewModel>> GetCoursesAsync(CourseListInputModel model)
         {
-            IQueryable<Course> baseQuery = dbContext.Courses;
+            /*IQueryable<Course> baseQuery = dbContext.Courses;
 
             baseQuery = (model.OrderBy, model.Ascending) switch
             {
@@ -142,6 +143,15 @@ namespace MyCourse.Models.Services.Application.Courses
                 ("Id", false) => baseQuery.OrderByDescending(course => course.Id),
                 _ => baseQuery
             };
+            */
+            string orderBy = model.OrderBy;
+            if (orderBy == "CurrentPrice")
+            {
+                orderBy = "CurrentPrice.Amount";
+            }
+            string direction = model.Ascending ? "asc" : "desc";
+
+            IQueryable<Course> baseQuery = dbContext.Courses.OrderBy($"{orderBy} {direction}");
 
             IQueryable<Course> queryLinq = baseQuery
                 .Where(course => course.Title.Contains(model.Search))
