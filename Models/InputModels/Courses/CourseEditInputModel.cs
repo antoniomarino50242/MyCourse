@@ -13,36 +13,24 @@ namespace MyCourse.Models.InputModels.Courses
 {
     public class CourseEditInputModel : IValidatableObject
     {
-        [Required]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Il titolo è obbligatorio."),
-        MinLength(10, ErrorMessage = "Il titolo dev'essere almeno di {1} caratteri."),
-        MaxLength(100, ErrorMessage = "Il titolo dev'essere di massimo {1} caratteri."),
-        RegularExpression(@"^[0-9A-z\u00C0-\u00ff\s\.']+$", ErrorMessage = "Titolo non valido."), //include anche i caratteri accentati
-        Remote(action: nameof(CoursesController.IsTitleAvailable), controller: "Courses", ErrorMessage = "Il titolo è già stato utilizzato per un altro corso. Prova ad inserirne uno differente.", AdditionalFields = "Id"),
-        Display(Name = "Titolo")]
+        [Display(Name = "Titolo")]
         public string Title { get; set; }
 
-        [MinLength(10, ErrorMessage = "La descrizione dev'essere almeno di {1} caratteri."),
-        MaxLength(4000, ErrorMessage = "La descrizione dev'essere di massimo {1} caratteri."),
-        Display(Name = "Descrizione")]
+        [Display(Name = "Descrizione")]
         public string Description { get; set; }
 
         [Display(Name = "Immagine rappresentativa")]
         public string ImagePath { get; set; }
 
-        [Required(ErrorMessage = "L'email di contatto è obbligatoria"),
-         EmailAddress(ErrorMessage = "Devi inserire un indirizzo email"),
-         Display(Name = "Email di contatto")]
+        [Display(Name = "Email di contatto")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Il prezzo intero è obbligatorio"),
-         Display(Name = "Prezzo intero")]
+        [Display(Name = "Prezzo intero")]
         public Money FullPrice { get; set; }
 
-        [Required(ErrorMessage = "Il prezzo corrente è obbligatorio"),
-         Display(Name = "Prezzo corrente")]
+        [Display(Name = "Prezzo corrente")]
         public Money CurrentPrice { get; set; }
 
         [Display(Name = "Nuova immagine...")]

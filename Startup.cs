@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using AspNetCore.ReCaptcha;
 using MyCourse.Models.Authorization;
+using FluentValidation.AspNetCore;
+using MyCourse.Models.Validators;
 
 namespace MyCourse
 {
@@ -54,6 +56,12 @@ namespace MyCourse
 
                 //model binder personalizzati
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+            })
+            .AddFluentValidation(options => {
+                options.RegisterValidatorsFromAssemblyContaining<CourseCreateValidator>();
+                options.ConfigureClientsideValidation(clientSide => {
+                    clientSide.Add(typeof(IRemotePropertyValidator), (context, description, validator) => new RemoteClientValidator(description, validator));
+                });
             });
 
             services.AddRazorPages(options=> {
@@ -114,6 +122,13 @@ namespace MyCourse
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
             services.AddSingleton<ITransactionLogger, LocalTransactionLogger>();
+
+            
+            //Validators di FluentValidation
+            //Si possono registrare così nel caso ci sia bisogno di selezionare un ciclo di vita diverso da Transient
+            //services.AddScoped<IValidator<CourseCreateInputModel>, CourseCreateValidator>();
+            //services.AddSingleton<IValidator<CourseEditInputModel>, CourseEditValidator>();
+
 
             //Servizi di pagamento
             //services.AddTransient<IPaymentGateway, PaypalPaymentGateway>();
