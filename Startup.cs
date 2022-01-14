@@ -122,6 +122,7 @@ namespace MyCourse
             services.AddSingleton<IEmailClient, MailKitEmailSender>();
             services.AddSingleton<IAuthorizationPolicyProvider, MultiAuthorizationPolicyProvider>();
             services.AddSingleton<ITransactionLogger, LocalTransactionLogger>();
+            services.AddTransient<IImageValidator, MicrosoftAzureImageValidator>();
 
             
             //Validators di FluentValidation
@@ -167,6 +168,7 @@ namespace MyCourse
             services.Configure<UsersOptions>(Configuration.GetSection("Users"));
             services.Configure<PaypalOptions>(Configuration.GetSection("Paypal"));
             services.Configure<StripeOptions>(Configuration.GetSection("Stripe"));
+            services.Configure<ImageValidationOptions>(Configuration.GetSection("ImageValidation"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
