@@ -57,35 +57,45 @@ namespace MyCourse
                 //model binder personalizzati
                 options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
             })
-            .AddFluentValidation(options => {
+            .AddFluentValidation(options =>
+            {
                 options.RegisterValidatorsFromAssemblyContaining<CourseCreateValidator>();
-                options.ConfigureClientsideValidation(clientSide => {
+                options.ConfigureClientsideValidation(clientSide =>
+                {
                     clientSide.Add(typeof(IRemotePropertyValidator), (context, description, validator) => new RemoteClientValidator(description, validator));
                 });
             });
 
-            services.AddRazorPages(options=> {
+            services.AddAuthentication().AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                facebookOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            });
+
+            services.AddRazorPages(options =>
+            {
                 options.Conventions.AllowAnonymousToPage("/Privacy");
                 options.Conventions.AllowAnonymousToFolder("/Public");
                 options.Conventions.AuthorizeFolder("/Admin");
             });
 
-            var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options=>{
-                        options.Password.RequireDigit = true;
-                        options.Password.RequiredLength = 8;
-                        options.Password.RequireLowercase = true;
-                        options.Password.RequireUppercase = true;
-                        options.Password.RequireNonAlphanumeric = true;
-                        options.Password.RequiredUniqueChars = 4;
+            var identityBuilder = services.AddDefaultIdentity<ApplicationUser>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredUniqueChars = 4;
 
-                        //conferma account
-                        options.SignIn.RequireConfirmedAccount = true;
+                //conferma account
+                options.SignIn.RequireConfirmedAccount = true;
 
-                        //conferma password
-                        options.Lockout.AllowedForNewUsers = true;
-                        options.Lockout.MaxFailedAccessAttempts = 5;
-                        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                    })
+                //conferma password
+                options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+            })
                     .AddClaimsPrincipalFactory<CustomClaimsPrincipalFactory>()
                     .AddPasswordValidator<CommonPasswordValidator<ApplicationUser>>();
 
@@ -99,10 +109,10 @@ namespace MyCourse
                     services.AddTransient<IDatabaseAccessor, SqliteDatabaseAccessor>();
 
                     identityBuilder.AddUserStore<AdoNetUserStore>();
-                break;
+                    break;
 
                 case Persistence.EfCore:
-                    
+
                     identityBuilder.AddEntityFrameworkStores<MyCourseDbContext>();
 
                     services.AddTransient<ICourseService, EfCoreCourseService>();
@@ -112,7 +122,7 @@ namespace MyCourse
                         string connetionString = Configuration.GetSection("ConnectionStrings").GetValue<String>("Default");
                         optionsBuilder.UseSqlite(connetionString);
                     });
-                break;
+                    break;
             }
 
             services.AddTransient<ICachedCourseService, MemoryCachedCourseService>();
@@ -124,7 +134,7 @@ namespace MyCourse
             services.AddSingleton<ITransactionLogger, LocalTransactionLogger>();
             services.AddTransient<IImageValidator, MicrosoftAzureImageValidator>();
 
-            
+
             //Validators di FluentValidation
             //Si possono registrare così nel caso ci sia bisogno di selezionare un ciclo di vita diverso da Transient
             //services.AddScoped<IValidator<CourseCreateInputModel>, CourseCreateValidator>();
@@ -142,14 +152,16 @@ namespace MyCourse
             services.AddScoped<IAuthorizationHandler, CourseSubscriberRequirementHandler>();
 
             //Policies
-            services.AddAuthorization( options=> {
-                options.AddPolicy(nameof(Policy.CourseAuthor), builder => 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(nameof(Policy.CourseAuthor), builder =>
                 {
                     builder.Requirements.Add(new CourseAuthorRequirement());
                 });
 
-                options.AddPolicy(nameof(Policy.CourseLimit), builder => {
-                    builder.Requirements.Add(new CourseLimitRequirement(limit : 5));
+                options.AddPolicy(nameof(Policy.CourseLimit), builder =>
+                {
+                    builder.Requirements.Add(new CourseLimitRequirement(limit: 5));
                 });
 
                 options.AddPolicy(nameof(Policy.CourseSubscriber), builder =>
