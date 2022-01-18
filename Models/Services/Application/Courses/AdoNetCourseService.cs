@@ -338,7 +338,7 @@ namespace MyCourse.Models.Services.Application.Courses
 
         public async Task<int?> GetCourseVoteAsync(int courseId)
         {
-            string userId = httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = GetCurrentUserId();
             string vote = await db.QueryScalarAsync<string>($"SELECT Vote FROM Subscriptions WHERE CourseId={courseId} AND UserId={userId}");
             return string.IsNullOrEmpty(vote) ? null : Convert.ToInt32(vote);
         }
@@ -350,12 +350,28 @@ namespace MyCourse.Models.Services.Application.Courses
                 throw new InvalidVoteException(inputModel.Vote);
             }
             
-            string userId = httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string userId = GetCurrentUserId();
             int updatedRows = await db.CommandAsync($"UPDATE Subscriptions SET Vote={inputModel.Vote} WHERE CourseId={inputModel.Id} AND UserId={userId}");
             if (updatedRows == 0)
             {
                 throw new CourseSubscriptionNotFoundException(inputModel.Id);
             }
+        }
+
+        public async Task<CourseSubscriptionViewModel> GetCourseSubscriptionAsyc(int courseId)
+        {
+            string userId = GetCurrentUserId();
+            DataSet dataSet = await db.QueryAsync($"SELECT Title, PaymentDate, PaymentType, Paid_Amount, Paid_Currency, TransactionId FROM Subscriptions INNER JOIN Courses ON Subscriptions.CourseId={courseId} AND Subscriptions.UserId={userId}");
+            if (dataSet.Tables[0].Rows.Count == 0)
+            {
+                throw new CourseSubscriptionNotFoundException(courseId);    
+            }
+            return CourseSubscriptionViewModel.FromDataRow(dataSet.Tables[0].Rows[0]);
+        }
+
+        private string GetCurrentUserId()
+        {
+            return httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
         }
     }
 }

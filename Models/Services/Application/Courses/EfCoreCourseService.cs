@@ -416,5 +416,23 @@ namespace MyCourse.Models.Services.Application.Courses
             subscription.Vote = inputModel.Vote;
             await dbContext.SaveChangesAsync();
         }
+
+        public async Task<CourseSubscriptionViewModel> GetCourseSubscriptionAsyc(int courseId)
+        {
+            string userId = GetCurrentUserId();
+            Subscription subscription = await dbContext.Subscriptions.Include(subscription => subscription.Course)
+                                                                     .SingleOrDefaultAsync(subscription => subscription.CourseId == courseId && subscription.UserId == userId);
+            if (subscription == null)
+            {
+                throw new CourseSubscriptionNotFoundException(courseId);
+            }
+
+            return CourseSubscriptionViewModel.FromEntity(subscription);
+        }
+
+        private string GetCurrentUserId()
+        {
+            return httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        }
     }
 }

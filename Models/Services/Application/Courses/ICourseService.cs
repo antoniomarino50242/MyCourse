@@ -28,5 +28,6 @@ namespace MyCourse.Models.Services.Application.Courses
         Task<string> GetPaymentUrlAsync(int courseId);
         Task<int?> GetCourseVoteAsync(int courseId);
         Task VoteCourseAsync(CourseVoteInputModel inputModel);
+        Task<CourseSubscriptionViewModel> GetCourseSubscriptionAsyc(int id);
     }
 }

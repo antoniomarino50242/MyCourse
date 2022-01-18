@@ -22,6 +22,7 @@ using AspNetCore.ReCaptcha;
 using MyCourse.Models.Authorization;
 using FluentValidation.AspNetCore;
 using MyCourse.Models.Validators;
+using Rotativa.AspNetCore;
 
 namespace MyCourse
 {
@@ -188,6 +189,8 @@ namespace MyCourse
         {
             IWebHostEnvironment env = app.Environment;
             IHostApplicationLifetime lifetime = app.Lifetime;
+
+            RotativaConfiguration.Setup(env.ContentRootPath);
 
             //if (env.IsDevelopment())
             if (env.IsEnvironment("Development"))

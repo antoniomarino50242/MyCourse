@@ -1,5 +1,3 @@
-using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +9,10 @@ using MyCourse.Models.InputModels.Courses;
 using MyCourse.Models.Options;
 using MyCourse.Models.Services.Application.Courses;
 using MyCourse.Models.Services.Infrastructure;
-using MyCourse.Models.ValueTypes;
 using MyCourse.Models.ViewModels;
 using MyCourse.Models.ViewModels.Courses;
+using Rotativa.AspNetCore;
+using Rotativa.AspNetCore.Options;
 
 namespace MyCourse.Controllers
 {
@@ -179,6 +178,36 @@ namespace MyCourse.Controllers
             return RedirectToAction(nameof(Detail), new {id = inputModel.Id});
         }
 
+        [Authorize(Policy = nameof(Policy.CourseSubscriber))]
+        public async Task<IActionResult> Receipt(int id) {
+            CourseSubscriptionViewModel viewModel = await courseService.GetCourseSubscriptionAsyc(id);
+            //return View(viewModel);
+            /*
+            return new ViewAsPdf
+            {
+                Model = viewModel,
+                ViewName = nameof(Receipt),
+                PageMargins = new Margins{Top = 10, Left = 10, Right = 10, Bottom = 20},
+                PageSize = Size.A4,
+                PageOrientation = Orientation.Portrait,
+                FileName = $"{viewModel.Title} - Ricevuta iscrizione.pdf"
+            };*/
+
+            ViewAsPdf pdf = new ViewAsPdf
+            {
+                Model = viewModel,
+                ViewName = nameof(Receipt),
+                PageMargins = new Margins{Top = 10, Left = 10, Right = 10, Bottom = 20},
+                PageSize = Size.A4,
+                PageOrientation = Orientation.Portrait,
+                FileName = $"{viewModel.Title} - Ricevuta iscrizione.pdf"
+            };
+
+            byte[] fileContents = await pdf.BuildFile(ControllerContext);
+
+            //Salvare fileContents
+            return File(fileContents, "application/pdf", pdf.FileName);
+        }
 
     }
 }
